@@ -27,8 +27,9 @@ jobs:
         working-directory: ./frontend
 
       - name: Lancement des tests
-        run: npm test -- --watchAll=false
+        run: npm test -- --run
         working-directory: ./frontend
+
 
       - name: Build
         run: npm run build

@@ -71,14 +71,16 @@ jobs:
       - name: Installation des dépendances
         run: |
           python -m venv venv
-          source venv/bin/activate
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          ./venv/bin/pip install --upgrade pip
+          ./venv/bin/pip install -r requirements.txt
 
       - name: Lancement des tests
+        run: |
+          ./venv/bin/pytest --tb=short -v
         env:
-          DATABASE_URL: postgres://postgres:${{ secrets.POSTGRES_PASSWORD }}@localhost:5432/test_db
+          DATABASE_URL: postgres://postgres:test_password@localhost:5432/test_db
           DJANGO_SETTINGS_MODULE: myproject.settings
+
         run: |
           source venv/bin/activate
           pytest --tb=short -v

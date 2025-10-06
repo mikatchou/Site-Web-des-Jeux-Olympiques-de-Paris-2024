@@ -34,7 +34,7 @@ jobs:
 
       - name: Déploiement sur S3
         run: |
-          aws s3 sync ./frontend/build s3://${{ secrets.S3_BUCKET }} --delete
+          aws s3 sync ./frontend/dist s3://${{ secrets.S3_BUCKET }} --delete
 
       - name: Invalidation du cache CloudFront
         run: |

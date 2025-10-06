@@ -24,6 +24,7 @@ jobs:
 
       - name: Installation des dépendances
         run: npm install
+        working-directory: ./frontend
 
       - name: Lancement des tests
         run: npm test -- --watchAll=false

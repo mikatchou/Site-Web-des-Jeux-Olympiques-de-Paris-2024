@@ -19,6 +19,7 @@ jobs:
 
       - name: Installation des dépendances
         run: npm install
+        working-directory: ./frontend
 
       - name: Build
         run: npm run build
@@ -43,7 +44,6 @@ jobs:
     name: Déploiement Backend
     runs-on: ubuntu-latest
     needs: frontend
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Configuration des identifiants AWS

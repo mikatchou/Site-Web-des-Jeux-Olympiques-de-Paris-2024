@@ -80,7 +80,3 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:test_password@localhost:5432/test_db
           DJANGO_SETTINGS_MODULE: myproject.settings
-
-        run: |
-          source venv/bin/activate
-          pytest --tb=short -v

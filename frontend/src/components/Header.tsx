@@ -11,8 +11,8 @@ export default function Header() {
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 
-    const menuRef = useRef(null);
-    const userMenuRef = useRef(null);
+    const menuRef = useRef<HTMLElement | null>(null)
+    const userMenuRef = useRef<HTMLElement | null>(null)
 
     useEffect(() => {
         const handleScroll = () => {
@@ -32,11 +32,11 @@ export default function Header() {
     }, [lastScrollY]);
 
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (menuRef.current && !menuRef.current.contains(event.target)) {
+        const handleClickOutside = (event : MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
             setIsMenuOpen(false);
             }
-            if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+            if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
             setIsUserMenuOpen(false);
             }
         };

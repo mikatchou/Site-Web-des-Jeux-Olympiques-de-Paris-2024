@@ -1,0 +1,24 @@
+:root {
+    --color-primary: #0057A0;
+    --color-secondary: #0067BD;
+    --color-tertiary: #2491EC;
+    --color-form-background: #F5F5F5;
+    --color-background: #F1F9FF;
+    --linear: linear-gradient(90deg, var(--color-primary) 0%, #00203A 100%);
+    --linear-down: linear-gradient(360deg, var(--color-primary) 0%, #00203A 100%);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-background);
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+  color: var(--color-primary);
+}

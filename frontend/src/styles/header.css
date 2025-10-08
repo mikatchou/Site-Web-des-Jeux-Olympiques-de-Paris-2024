@@ -1,0 +1,130 @@
+header {
+  background: var(--linear);
+  padding: 10px 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100px;
+  position: relative;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: fixed;
+  top: 0;
+  width: 100%;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+header.hidden {
+  transform: translateY(-100%);
+}
+header.visible {
+  transform: translateY(0);
+}
+main {
+  margin-top: 100px;
+  padding: 50px 100px;
+  height: 1000px;
+}
+header > div {
+  height: 100%;
+}
+#logo {
+  object-fit: cover;
+  height: 100%;
+}
+#user{
+  position: relative;
+}
+#navigation{
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: 100%;
+}
+#navigation > div {
+  display: flex;
+  align-items: center;
+}
+#navigation > div > button {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+#panier {
+  height: 100%;
+}
+.menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 300PX;
+  padding: 20px 30px;
+  background: var(--linear-down);
+  border-radius: 0 0 0 25px;
+  box-shadow: 0 0px 8px rgba(0, 0, 0, 0.1);
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+#userMenuTitle {
+  text-align: center;
+  margin-bottom: 20px;
+  color: white;
+}
+/* #userMenuTitle.closed{
+  display: none;
+} */
+.menu.open {
+  max-height: 300px;
+  opacity: 1;
+}
+.menu.closed {
+  max-height: 0;
+  opacity: 0;
+}
+ul {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: var(--color-background);
+  border-radius: 10px;
+  overflow: hidden;
+}
+a {
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  border-radius: none;
+}
+li {
+  list-style: none;
+  width: 100%;
+  text-align: center;
+  padding: 10px 0;
+  display: flex;
+  transition: all 0.3s ease;
+}
+li:hover {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+
+
+@media  (max-width: 800px) {
+  header {
+    padding: 10px 20px;
+    height: 90px;
+  }
+  main {
+    margin-top: 100px;
+    padding: 30px 20px;
+  } 
+  #logo {
+    height: 70%;
+  }
+  .menu{
+  width: 100%;
+  border-radius: 0 0 25px 25px;
+  }
+}

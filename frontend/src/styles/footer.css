@@ -1,0 +1,32 @@
+footer{
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  background: var(--linear);
+  padding: 50px 100px;
+}
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: white;
+}
+.footer-li > a {
+  font-weight: 100;
+}
+@media  (max-width: 800px) {
+  footer {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 50px;
+    gap: 50px;
+  }
+}

@@ -22,7 +22,6 @@ header.visible {
 main {
   margin-top: 100px;
   padding: 50px 100px;
-  height: 1000px;
 }
 header > div {
   height: 100%;
@@ -82,7 +81,7 @@ header > div {
   max-height: 0;
   opacity: 0;
 }
-ul {
+.menu-list{
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -96,7 +95,7 @@ a {
   width: 100%;
   border-radius: none;
 }
-li {
+.menu-puce {
   list-style: none;
   width: 100%;
   text-align: center;

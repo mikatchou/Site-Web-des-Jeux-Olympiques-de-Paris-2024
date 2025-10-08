@@ -76,17 +76,17 @@ export default function Header() {
         </div>
 
         <nav ref={menuRef} id="menu" className={isMenuOpen ? "menu open" : "menu closed"} data-testid="main-menu">
-            <ul className="flex flex-col gap-2">
-            <li><Link to="/">Accueil</Link></li>
-            <li><Link to="/contact">Contact</Link></li>
-            <li><Link to="/about-us">A propos</Link></li>
+            <ul className="menu-list">
+            <li className="menu-puce"><Link to="/">Accueil</Link></li>
+            <li className="menu-puce"><Link to="/contact">Contact</Link></li>
+            <li className="menu-puce"><Link to="/about-us">A propos</Link></li>
             </ul>
         </nav>
         <nav ref={userMenuRef} id="userMenu" className={isUserMenuOpen ? "menu open" : "menu closed"}>
             <h3 id="userMenuTitle" className="closed">Bonjour Mika</h3>
-            <ul className="flex flex-col gap-2">
-                <li><Link to="/login">Me connecter</Link></li>
-                <li><Link to="/register">M'inscrire</Link></li>
+            <ul className="menu-list">
+                <li className="menu-puce"><Link to="/login">Me connecter</Link></li>
+                <li className="menu-puce"><Link to="/register">M'inscrire</Link></li>
             </ul>
         </nav>
         </header>

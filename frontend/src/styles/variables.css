@@ -15,10 +15,16 @@
   margin: 0;
   padding: 0;
 }
-
+#root, html, body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 body {
   background-color: var(--color-background);
   font-family: 'Roboto', sans-serif;
   font-weight: bold;
   color: var(--color-primary);
+  min-height: 100vh;
 }

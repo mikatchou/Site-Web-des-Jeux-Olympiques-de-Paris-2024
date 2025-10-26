@@ -13,6 +13,7 @@ export default function Header() {
 
     const menuRef = useRef<HTMLElement | null>(null)
     const userMenuRef = useRef<HTMLElement | null>(null)
+    const iconStyle = { width: '35px', height: '35px', color: 'white' };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -52,7 +53,7 @@ export default function Header() {
     return (
         <header className={isVisible ? "visible" : "hidden"}>
         <div id="logo-container">
-            <Link to="/">
+            <Link className="logo-link" to="/">
             <img id="logo" src={Logo} alt="Logo des jeux olympiques de Paris 2024" />
             </Link>
         </div>
@@ -60,33 +61,33 @@ export default function Header() {
         <div id="navigation">
             <div id="panier">
             <button id="cartbutton" aria-label="">
-                <IoCartOutline style={{ width: '35px', height: '35px', color: 'white' }}/>
+                <IoCartOutline style={iconStyle}/>
             </button>
             </div>
             <div id="user">
-            <button id="userbutton" aria-label="Menu utilisateur" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>
-                {isUserMenuOpen ? <IoClose style={{ width: '35px', height: '35px', color: 'white' }} /> : <FaCircleUser style={{ width: '35px', height: '35px', color: 'white' }} />}
+            <button id="userbutton" aria-label="Bouton menu utilisateur" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>
+                {isUserMenuOpen ? <IoClose style={iconStyle} /> : <FaCircleUser style={iconStyle} />}
             </button>
             </div>
             <div id="block-menu">
-            <button id="menubutton" aria-label="Menu principal" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                {isMenuOpen ? <IoClose style={{ width: '35px', height: '35px', color: 'white' }} /> : <IoMenu style={{ width: '35px', height: '35px', color: 'white' }} />}
+            <button id="menubutton" aria-label="Bouton menu principal" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                {isMenuOpen ? <IoClose style={iconStyle} /> : <IoMenu style={iconStyle} />}
             </button>
             </div>
         </div>
 
-        <nav ref={menuRef} id="menu" className={isMenuOpen ? "menu open" : "menu closed"} data-testid="main-menu">
+        <nav aria-label="Menu principal" ref={menuRef} id="menu" className={isMenuOpen ? "menu open" : "menu closed"} data-testid="main-menu">
             <ul className="menu-list">
-            <li className="menu-puce"><Link to="/">Accueil</Link></li>
-            <li className="menu-puce"><Link to="/contact">Contact</Link></li>
-            <li className="menu-puce"><Link to="/about-us">A propos</Link></li>
+            <li className="menu-puce"><Link to="/" onClick={() => setIsMenuOpen(false)}>Accueil</Link></li>
+            <li className="menu-puce"><Link to="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link></li>
+            <li className="menu-puce"><Link to="/about-us" onClick={() => setIsMenuOpen(false)}>A propos</Link></li>
             </ul>
         </nav>
-        <nav ref={userMenuRef} id="userMenu" className={isUserMenuOpen ? "menu open" : "menu closed"}>
+        <nav aria-label="Menu utilisateur" ref={userMenuRef} id="userMenu" className={isUserMenuOpen ? "menu open" : "menu closed"}>
             <h3 id="userMenuTitle" className="closed">Bonjour Mika</h3>
             <ul className="menu-list">
-                <li className="menu-puce"><Link to="/login">Me connecter</Link></li>
-                <li className="menu-puce"><Link to="/register">M'inscrire</Link></li>
+                <li className="menu-puce" onClick={() => setIsUserMenuOpen(false)}><Link to="/login">Me connecter</Link></li>
+                <li className="menu-puce" onClick={() => setIsUserMenuOpen(false)}><Link to="/inscription">M'inscrire</Link></li>
             </ul>
         </nav>
         </header>

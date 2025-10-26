@@ -6,6 +6,7 @@ export default function MainLayout() {
   return (
     <>
       <Header />
+      <div id="header-ghost"></div>
       <main><Outlet /></main>
       <Footer />
     </>

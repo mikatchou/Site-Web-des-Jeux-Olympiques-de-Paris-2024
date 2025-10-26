@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Django
+/staticfiles/
+/media/
+
+# Env
+.env
+*.env
+venv/
+.env.local
+.env.development
+.env.production
+
+# Node / React
+node_modules/
+build/
+dist/
+
+# Tests
+coverage/
+*.pytest_cache/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

@@ -46,12 +46,9 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_NAME: test_db
-          POSTGRES_USER: test_user
-          POSTGRES_PASSWORD: test_password
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
-          DJANGO_SETTINGS_MODULE: backend.settings
+          POSTGRES_USER: local_admin
+          POSTGRES_PASSWORD: local_password
+          POSTGRES_DB: 'local_db'
         ports:
           - 5432:5432
         options: >-
@@ -79,5 +76,4 @@ jobs:
         run: |
           ./venv/bin/pytest --tb=short -v
         env:
-          DATABASE_URL: postgres://postgres:test_password@localhost:5432/test_db
           DJANGO_SETTINGS_MODULE: backend.settings

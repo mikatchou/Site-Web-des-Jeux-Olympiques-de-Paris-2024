@@ -79,4 +79,4 @@ jobs:
           ./venv/bin/pytest --tb=short -v
         env:
           DATABASE_URL: postgres://postgres:test_password@localhost:5432/test_db
-          DJANGO_SETTINGS_MODULE: myproject.settings
+          DJANGO_SETTINGS_MODULE: backend.settings

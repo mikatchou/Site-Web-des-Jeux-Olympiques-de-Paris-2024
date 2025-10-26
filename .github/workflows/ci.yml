@@ -3,7 +3,7 @@ name: Full-Stack CI
 on:
   push:
     branches:
-      - main
+      - "*"
   pull_request:
     branches:
       - main
@@ -79,3 +79,10 @@ jobs:
           ./venv/bin/pytest --tb=short -v
         env:
           DJANGO_SETTINGS_MODULE: backend.settings
+
+  merge-if-tests-pass:
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Merge branch
+        run: echo "Tous les tests sont passés, merge autorisé"       

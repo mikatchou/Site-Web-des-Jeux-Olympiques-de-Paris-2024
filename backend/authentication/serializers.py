@@ -66,3 +66,7 @@ class AuthenticationSerializer(serializers.ModelSerializer):
         )
         auth.save()
         return auth
+    
+class loginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()

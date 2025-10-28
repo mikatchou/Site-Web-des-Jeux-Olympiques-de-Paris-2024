@@ -34,6 +34,14 @@ def add_user() :
     )
     return user
 
+@pytest.fixture
+def create_auth(add_user):
+    auth = Authentication.objects.create(
+        user = add_user,
+        otp_code = 123456
+    )
+    return auth
+
 @pytest.mark.django_db
 def test_email_inexistant(api_client, add_user):
     url = reverse('login')
@@ -130,3 +138,20 @@ def test_connexion_data_valid_et_compte_actif(api_client, add_user) :
     assert response.status_code == status.HTTP_200_OK
     assert "success" in response.data
     assert response.data["auth_id"] == auth.pk
+    
+@pytest.mark.django_db
+def test_connexion_successive(api_client, create_auth):
+    auth = create_auth
+    auth.otp_code = "123456"
+    auth.expires_at = timezone.now() + timedelta(minutes=5)
+    auth.save()
+    url = reverse('login')
+    data = {
+        "email" : "mika@test.com",
+        "password" : "1234562ESih..:"
+    }
+    response = api_client.post(url, data, format="json")
+    assert response.status_code == 200
+    assert "success" in response.data
+    assert response.data["success"] == "un code à été déjà envoyé dans votre adresse mail"
+    

@@ -135,7 +135,7 @@ class LoginStep2View(APIView):
             return Response({"error": "Trop de tentatives, veuillez réessayer ultérieurement"}, status=403)
         
         #Vérification si le code est bon mais expiré, retourne une erreur
-        if auth.otp_code == otp_code and auth.expires_at and auth.expires_at < timezone.now():
+        if auth.otp_code and auth.otp_code == otp_code and auth.expires_at and auth.expires_at < timezone.now():
             return Response({"error": "Le code a expiré, veuillez faire une nouvelle demande de code"}, status=401)
         
         #Vérification du code et incrémentation de l'essai si incorrect, bloque et retourne forbidden si plus de 10 essais
@@ -160,3 +160,58 @@ class LoginStep2View(APIView):
             "access": str(refresh.access_token),
             "refresh": str(refresh),
         }, status=200)
+        
+class LoginStep2NewCodeView(APIView):
+    permission_classes = [AllowAny]
+    serializer_class = NewOtpSerializer
+    
+    def post(self, request):
+        serializer = NewOtpSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        auth_id = serializer.validated_data['auth_id']
+        
+        #Vérification si l'authentication existe dans la bdd, sinon retourne une erreur
+        try :
+            auth = Authentication.objects.get(id=auth_id)
+        except Authentication.DoesNotExist:
+            return Response(
+                {"error": "Aucune tentative de connexion n'a été trouvée, veuillez réesayer de vous connecter"},
+                status=401
+                )
+        
+        #Vérification si le compte est bloqué temporairement, si oui, retourne l'erreur forbidden
+        if auth.blocked_until and auth.blocked_until > timezone.now():
+            return Response({"error": "Trop de tentatives, veuillez réessayer ultérieurement"}, status=403)
+        
+        #si authentication possède déjà un code encore valide, pas de génération de code ou d'envoi de mail
+        if auth.otp_code and auth.expires_at > timezone.now(): 
+            left = int((auth.expires_at - timezone.now()).total_seconds())
+            minutes = left // 60
+            secondes = left % 60
+            if minutes > 1:
+                remaining_time = f"{minutes} minutes {secondes} secondes"
+            else : 
+                remaining_time = f"{secondes} secondes"
+            return Response(
+                {"success": f"un code à été déjà envoyé dans votre adresse mail, veuillez attendre encore {remaining_time}", 
+                "remaining_time" : remaining_time}, 
+                status=200
+                )
+            
+        #Génération d'un code pour la connexion en 2 facteurs et envoi du code par e-mail
+        otp_code = "".join(random.choices("0123456789", k=6))
+        auth.otp_code = otp_code
+        auth.expires_at = timezone.now() + timedelta(minutes=5)
+        auth.save()
+        user_mail = auth.user.email
+        send_mail(
+            subject="Connexion en 2 étapes",
+            message=f"Voici votre code pour la validation en 2 étapes  : {otp_code}\nCe code expirera dans 5 minutes.",
+            from_email= settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user_mail],
+            fail_silently=False,
+        )
+        return Response(
+            {"success": "un code à été envoyé dans votre adresse mail"},
+            status=200
+        )

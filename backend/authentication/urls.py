@@ -6,4 +6,5 @@ urlpatterns = [
     path('activation/<str:activation_code>/', UserActivationView.as_view(), name="activation"),
     path('connexion/', LoginView.as_view(), name="login"),
     path('connexion/etape-2/', LoginStep2View.as_view(), name="login_step_2"),
+    path('connexion/etape-2/nouveau-code/', LoginStep2NewCodeView.as_view(), name="login_step_2_new_code"),
 ]

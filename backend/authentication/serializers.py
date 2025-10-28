@@ -81,3 +81,6 @@ class OtpSerializer(serializers.Serializer):
         if len(value) != 6:
             raise serializers.ValidationError("Le code OTP doit avoir 6 chiffres.")
         return value
+    
+class NewOtpSerializer(serializers.Serializer):
+    auth_id = serializers.IntegerField()

@@ -104,22 +104,6 @@ def test_erreur_code(api_client, create_auth):
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.data["error"] == "Code incorrect"
     assert auth.code_attempt == 2
-    
-
-@pytest.mark.django_db
-def connexion_successive(api_client, create_auth):
-    auth = create_auth
-    auth.otp_code = "123456"
-    url = reverse('login_step_2')
-    data = {
-        "otp_code" : "123456",
-        "auth_id" : auth.pk
-    }
-    response = api_client.post(url, data, format="json")
-    assert response.status_code == 200
-    assert "success" in response.data
-    assert response.data["success"] == "un code à été déjà envoyé dans votre adresse mail"
-    
 
 @pytest.mark.django_db
 def test_code_valide(api_client, create_auth):

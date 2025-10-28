@@ -67,6 +67,17 @@ class AuthenticationSerializer(serializers.ModelSerializer):
         auth.save()
         return auth
     
-class loginSerializer(serializers.Serializer):
+class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
+    
+class OtpSerializer(serializers.Serializer):
+    auth_id = serializers.IntegerField()
+    otp_code= serializers.CharField()
+    
+    def validate_otp_code(self, value):
+        if not value.isdigit():
+            raise serializers.ValidationError("Le code OTP doit contenir uniquement des chiffres.")
+        if len(value) != 6:
+            raise serializers.ValidationError("Le code OTP doit avoir 6 chiffres.")
+        return value

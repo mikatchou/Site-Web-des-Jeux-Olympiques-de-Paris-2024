@@ -68,12 +68,12 @@ def test_code_déjà_envoyé(api_client, create_auth):
     minutes = left // 60
     secondes = left % 60
     remaining_time = f"{minutes} minutes {secondes} secondes"
-    assert remaining_time == response.data["remaining_time"]
+    assert left == response.data["remaining_time"]
     assert response.status_code == 200
     assert response.data["success"] == f"un code à été déjà envoyé dans votre adresse mail, veuillez attendre encore {remaining_time}"
     
 @pytest.mark.django_db
-def test_envoi_nouveau_code(api_client, create_auth):
+def test_envoi_nouveau_code(api_client, create_auth, clear_mailbox):
     auth = create_auth
     auth.expires_at = None
     auth.otp_code = None

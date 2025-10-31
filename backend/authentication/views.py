@@ -10,6 +10,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from authentication.models import CustomUser, Authentication
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
+from django.utils.translation import gettext_lazy as _
 import random
 
 class UserCreateView(generics.CreateAPIView):
@@ -93,7 +95,8 @@ class LoginView(APIView) :
         #si authentication possède déjà un code encore valide (l'utilisateur tente de se connecter plusiers fois), pas de génération de code ou d'envoi de mail
         if auth.otp_code and auth.expires_at > timezone.now(): 
             auth_id = auth.pk
-            return Response({"success": "un code à été déjà envoyé dans votre adresse mail", "auth_id": auth_id}, status=200)
+            left = int((auth.expires_at - timezone.now()).total_seconds())
+            return Response({"success": "un code à été déjà envoyé dans votre adresse mail", "auth_id": auth_id, "remaining_time": left}, status=200)
         
         #Génération d'un code pour la connexion en 2 facteurs et envoi du code par e-mail
         otp_code = "".join(random.choices("0123456789", k=6))
@@ -155,12 +158,27 @@ class LoginStep2View(APIView):
 
         #Création des tokens de connexion stateless et retour d'une reponse success avec les tokens
         refresh = RefreshToken.for_user(user)
-        return Response({
-            "success": "Connexion validée",
-            "access": str(refresh.access_token),
-            "refresh": str(refresh),
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
+        response = Response({
+                "success": "Connexion validée",
+                "access": str(access_token),
+                "first_name" : user.first_name
         }, status=200)
         
+        # Sauvegarde du refresh token dans les cookie en httpOnly pour empêcher l'accès par un malfaiteur
+        response.set_cookie(
+            key="refresh_token",
+            value=str(refresh_token),
+            httponly=True,
+            secure=False,  
+            samesite="Lax",
+        )
+        print("Set refresh_token cookie:", refresh_token)
+        print("Response cookies:", response.cookies)
+
+        return response
+
 class LoginStep2NewCodeView(APIView):
     permission_classes = [AllowAny]
     serializer_class = NewOtpSerializer
@@ -183,7 +201,7 @@ class LoginStep2NewCodeView(APIView):
         if auth.blocked_until and auth.blocked_until > timezone.now():
             return Response({"error": "Trop de tentatives, veuillez réessayer ultérieurement"}, status=403)
         
-        #si authentication possède déjà un code encore valide, pas de génération de code ou d'envoi de mail
+        #Si authentication possède déjà un code encore valide, pas de génération de code ou d'envoi de mail
         if auth.otp_code and auth.expires_at > timezone.now(): 
             left = int((auth.expires_at - timezone.now()).total_seconds())
             minutes = left // 60
@@ -194,7 +212,7 @@ class LoginStep2NewCodeView(APIView):
                 remaining_time = f"{secondes} secondes"
             return Response(
                 {"success": f"un code à été déjà envoyé dans votre adresse mail, veuillez attendre encore {remaining_time}", 
-                "remaining_time" : remaining_time}, 
+                "remaining_time" : left}, 
                 status=200
                 )
             
@@ -215,3 +233,49 @@ class LoginStep2NewCodeView(APIView):
             {"success": "un code à été envoyé dans votre adresse mail"},
             status=200
         )
+
+class RefreshView(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def post(self, request):
+        
+        # retourne erreur si refresh token n'existe pas
+        refresh_token = request.COOKIES.get("refresh_token")
+        if not refresh_token:
+            return Response({"error": "No refresh token"}, status=401)
+
+        # Tentative de génération d'un nouveau access token à partir du refresh token puis retour à l'utilisateur
+        try:
+            refresh = RefreshToken(refresh_token)
+            user_id = refresh["user_id"]
+            user = CustomUser.objects.get(id=user_id)
+            new_access = str(refresh.access_token)
+
+            return Response({
+                "access": new_access,
+                "first_name": user.first_name
+            }, status=200)
+
+        # retourne une erreur associé au refresh token 
+        except TokenError as e:
+            print("TokenError:", str(e))
+            response = Response(
+                {"error": "Refresh token expired or invalid, please login again"},
+                status=401
+            )
+            response.delete_cookie("refresh_token") 
+            return response
+
+        # retourne erreur si l'utilisateur associé au refresh token n'existe pas
+        except CustomUser.DoesNotExist:
+            response = Response({"error": "User not found"}, status=401)
+            response.delete_cookie("refresh_token")
+            return response
+
+        # retourne tout les autres types d'erreurs dont les précédents ne couvrent pas
+        except Exception as e:
+            print("Unexpected error:", str(e))
+            response = Response({"error": "Invalid refresh token"}, status=401)
+            response.delete_cookie("refresh_token")
+            return response

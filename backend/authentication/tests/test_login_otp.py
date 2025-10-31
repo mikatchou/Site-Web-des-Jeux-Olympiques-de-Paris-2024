@@ -117,5 +117,8 @@ def test_code_valide(api_client, create_auth):
     assert response.status_code == 200
     assert "success" in response.data
     assert response.data["success"] == "Connexion validée"
+    assert "access" in response.data
+    assert "refresh_token" in api_client.cookies
+    print(api_client.cookies)
     
     

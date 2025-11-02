@@ -1,5 +1,5 @@
-import { it, expect, describe, beforeEach, vi } from 'vitest'
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { it, expect, describe } from 'vitest'
+import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import Timer from '../../components/Timer';
 import '@testing-library/jest-dom'

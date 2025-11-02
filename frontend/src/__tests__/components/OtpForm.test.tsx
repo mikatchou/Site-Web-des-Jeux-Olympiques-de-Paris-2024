@@ -3,7 +3,6 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import '@testing-library/jest-dom'
 import OtpForm from '../../components/OtpForm';
-import { useState } from 'react';
 
 const mockNavigate = vi.fn()
 vi.mock("react-router-dom", async () => {

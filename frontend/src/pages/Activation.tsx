@@ -1,5 +1,5 @@
 import api from "../api"
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingIndicator from "../components/LoadingIndicator";
 import { useParams } from "react-router-dom";
@@ -9,13 +9,19 @@ export default function Activation () {
     const navigate = useNavigate()
     const [loading, setLoading] = useState(true)
     const { token } = useParams<{ token: string }>();
+    const didRun = useRef(false)
 
     useEffect(() => {
+
+        if (didRun.current) return
+        didRun.current = true
+
         const activation = async () => {
             try {
                     const res = await api.put(`auth/activation/${token}/`)
                     if (res.status === 200) {
-                        navigate("/connexion/?actived=true")
+                        alert("Votre compte a bien été activé, vous pouvez à présent vous connecter")
+                        navigate("/connexion/")
                     }
                 } catch (error: any) {
                     if (error.status == 404) {
@@ -28,7 +34,7 @@ export default function Activation () {
                 }
         }
         activation()
-    }, [])
+    }, [token])
 
     return <>
         {loading && <LoadingIndicator /> }

@@ -173,7 +173,7 @@ export default function RegisterForm() {
         <div className='asterisque-div'>
             <p id='asterisque'>Les champs représentés par un (*) sont obligatoires</p>
         </div>
-        <button type='submit' id='submit'>Créer mon compte</button>
+        <button type='submit' id='submit' className="submit">Créer mon compte</button>
         <br/>
         {loading && <LoadingIndicator /> } 
     </form>

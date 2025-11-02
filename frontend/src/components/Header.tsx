@@ -1,7 +1,8 @@
 import "../styles/header.css";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
+import { AuthContext } from "./AuthProvider"
 import Logo from "../assets/images/Logo petit.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { IoCartOutline, IoClose, IoMenu } from "react-icons/io5";
 import { FaCircleUser } from "react-icons/fa6";
 
@@ -10,10 +11,10 @@ export default function Header() {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
-
     const menuRef = useRef<HTMLElement | null>(null)
     const userMenuRef = useRef<HTMLElement | null>(null)
     const iconStyle = { width: '35px', height: '35px', color: 'white' };
+    const {isAuthenticated, user} = useContext(AuthContext)
 
     useEffect(() => {
         const handleScroll = () => {
@@ -49,6 +50,12 @@ export default function Header() {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isMenuOpen, isUserMenuOpen]);
 
+    const navigate = useNavigate();
+    const goToLogin = () => {
+        localStorage.setItem("previous_url", window.location.pathname);
+        navigate("/connexion");
+    };
+
 
     return (
         <header className={isVisible ? "visible" : "hidden"}>
@@ -78,17 +85,24 @@ export default function Header() {
 
         <nav aria-label="Menu principal" ref={menuRef} id="menu" className={isMenuOpen ? "menu open" : "menu closed"} data-testid="main-menu">
             <ul className="menu-list">
-            <li className="menu-puce"><Link to="/" onClick={() => setIsMenuOpen(false)}>Accueil</Link></li>
+            <li className="menu-puce"><Link to="/" onClick={() => {setIsMenuOpen(false); goToLogin()}}>Accueil</Link></li>
             <li className="menu-puce"><Link to="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link></li>
             <li className="menu-puce"><Link to="/about-us" onClick={() => setIsMenuOpen(false)}>A propos</Link></li>
             </ul>
         </nav>
         <nav aria-label="Menu utilisateur" ref={userMenuRef} id="userMenu" className={isUserMenuOpen ? "menu open" : "menu closed"}>
-            <h3 id="userMenuTitle" className="closed">Bonjour Mika</h3>
-            <ul className="menu-list">
-                <li className="menu-puce" onClick={() => setIsUserMenuOpen(false)}><Link to="/login">Me connecter</Link></li>
+            { isAuthenticated ? <>
+                <h3 id="userMenuTitle" className="closed">Bonjour {user}</h3>
+                <ul className="menu-list">
+                    <li className="menu-puce" onClick={() => setIsUserMenuOpen(false) }><Link to="/espace-personnel">Mon espace personnel</Link></li>
+                    <li className="menu-puce" onClick={() => setIsUserMenuOpen(false)}><Link to="/deconnexion">Déconnexion</Link></li>
+                </ul>
+            </>
+            : <ul className="menu-list">
+                <li className="menu-puce" onClick={() => setIsUserMenuOpen(false)}><Link to="/connexion" state={{ from: location.pathname }}>Me connecter</Link></li>
                 <li className="menu-puce" onClick={() => setIsUserMenuOpen(false)}><Link to="/inscription">M'inscrire</Link></li>
             </ul>
+            }
         </nav>
         </header>
     );

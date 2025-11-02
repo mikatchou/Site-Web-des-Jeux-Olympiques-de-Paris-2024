@@ -12,6 +12,8 @@ from authentication.models import CustomUser, Authentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from django.utils.translation import gettext_lazy as _
+from smtplib import SMTPException
+import socket
 import random
 
 class UserCreateView(generics.CreateAPIView):
@@ -73,7 +75,7 @@ class LoginView(APIView) :
         if not user.check_password(password):
             auth.password_attempt += 1
             if auth.password_attempt >= 10:
-                auth.blocked_until = timezone.now() + timedelta(minutes=30)
+                auth.blocked_until = timezone.now() + timedelta(seconds=20)
                 auth.password_attempt = 0
                 auth.save()
                 return Response({"error": "Trop de tentatives, veuillez réessayer ultérieurement"}, status=403)
@@ -98,22 +100,28 @@ class LoginView(APIView) :
             left = int((auth.expires_at - timezone.now()).total_seconds())
             return Response({"success": "un code à été déjà envoyé dans votre adresse mail", "auth_id": auth_id, "remaining_time": left}, status=200)
         
-        #Génération d'un code pour la connexion en 2 facteurs et envoi du code par e-mail
-        otp_code = "".join(random.choices("0123456789", k=6))
-        auth.password_attempt = 0
-        auth.blocked_until = None
-        auth.otp_code = otp_code
-        auth.expires_at = timezone.now() + timedelta(minutes=5)
-        auth.save()
-        send_mail(
-            subject="Connexion en 2 étapes",
-            message=f"Voici votre code pour la validation en 2 étapes  : {otp_code}\nCe code expirera dans 5 minutes.",
-            from_email= settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            fail_silently=False,
-        )
-        auth_id = auth.pk
-        return Response({"success": "un code à été envoyé dans votre adresse mail", "auth_id": auth_id}, status=200)
+        try :
+            #Génération d'un code pour la connexion en 2 facteurs et envoi du code par e-mail
+            otp_code = "".join(random.choices("0123456789", k=6))
+            auth.password_attempt = 0
+            auth.blocked_until = None
+            auth.otp_code = otp_code
+            auth.expires_at = timezone.now() + timedelta(seconds=20)
+            send_mail(
+                subject="Connexion en 2 étapes",
+                message=f"Voici votre code pour la validation en 2 étapes  : {otp_code}\nCe code expirera dans 5 minutes.",
+                from_email= settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+            auth.save()
+            auth_id = auth.pk
+            return Response({"success": "un code à été envoyé dans votre adresse mail", "auth_id": auth_id}, status=200)
+        except (SMTPException, socket.gaierror, ConnectionRefusedError, TimeoutError) as e:
+            print("Erreur d'envoi d'email :", e)
+            return Response(
+                status=500
+            )
     
 class LoginStep2View(APIView):
     serializer_class = OtpSerializer
@@ -145,8 +153,9 @@ class LoginStep2View(APIView):
         if auth.otp_code != otp_code:
             auth.code_attempt += 1
             if auth.code_attempt >= 10:
-                auth.blocked_until = timezone.now() + timedelta(minutes=30)
+                auth.blocked_until = timezone.now() + timedelta(seconds=20)
                 auth.code_attempt = 0
+                auth.expires_at = None
                 auth.save() 
                 return Response({"error": "Trop de tentatives, veuillez réessayer ultérieurement"}, status=403)
             auth.save()
@@ -202,7 +211,7 @@ class LoginStep2NewCodeView(APIView):
             return Response({"error": "Trop de tentatives, veuillez réessayer ultérieurement"}, status=403)
         
         #Si authentication possède déjà un code encore valide, pas de génération de code ou d'envoi de mail
-        if auth.otp_code and auth.expires_at > timezone.now(): 
+        if auth.otp_code and auth.expires_at and auth.expires_at > timezone.now(): 
             left = int((auth.expires_at - timezone.now()).total_seconds())
             minutes = left // 60
             secondes = left % 60
@@ -216,23 +225,30 @@ class LoginStep2NewCodeView(APIView):
                 status=200
                 )
             
-        #Génération d'un code pour la connexion en 2 facteurs et envoi du code par e-mail
-        otp_code = "".join(random.choices("0123456789", k=6))
-        auth.otp_code = otp_code
-        auth.expires_at = timezone.now() + timedelta(minutes=5)
-        auth.save()
-        user_mail = auth.user.email
-        send_mail(
-            subject="Connexion en 2 étapes",
-            message=f"Voici votre code pour la validation en 2 étapes  : {otp_code}\nCe code expirera dans 5 minutes.",
-            from_email= settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user_mail],
-            fail_silently=False,
-        )
-        return Response(
-            {"success": "un code à été envoyé dans votre adresse mail"},
-            status=200
-        )
+        try : 
+            #Génération d'un code pour la connexion en 2 facteurs et envoi du code par e-mail
+            otp_code = "".join(random.choices("0123456789", k=6))
+            auth.otp_code = otp_code
+            auth.expires_at = timezone.now() + timedelta(seconds=20)
+            user_mail = auth.user.email
+            send_mail(
+                subject="Connexion en 2 étapes",
+                message=f"Voici votre code pour la validation en 2 étapes  : {otp_code}\nCe code expirera dans 5 minutes.",
+                from_email= settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user_mail],
+                fail_silently=False,
+            )
+            auth.save()
+            return Response(
+                {"success": "un code à été envoyé dans votre adresse mail"},
+                status=200
+            )
+        except (SMTPException, socket.gaierror, ConnectionRefusedError, TimeoutError) as e:
+            print("Erreur d'envoi d'email :", e)
+            return Response(
+                {"error": "L'envoi de l'email a échoué. Veuillez réessayer plus tard."},
+                status=500
+            )
 
 class RefreshView(APIView):
     permission_classes = [AllowAny]

@@ -6,15 +6,33 @@ import Register from "./pages/Register"
 import NotFound from "./pages/NotFound";
 import Registered from "./pages/Registered";
 import Activation from "./pages/Activation";
+import Login from "./pages/Login";
+import { ACCESS_TOKEN } from "./constants";
+import { useContext, useEffect } from "react";
+import { AuthContext } from "./components/AuthProvider";
 
-function Logout (){
-  localStorage.clear()
-  return <Navigate to="/" />
+function Logout () {
+  const { setUser } = useContext(AuthContext);
+
+  useEffect(() => {
+    localStorage.removeItem(ACCESS_TOKEN);
+    localStorage.removeItem("first_name");
+    setUser(null);
+  }, [setUser]);
+
+  return <Navigate to="/" />;
 }
 
 function RegisterAndLogout () {
-  localStorage.clear()
-  return <Register />
+  const { setUser } = useContext(AuthContext);
+
+  useEffect(() => {
+    localStorage.removeItem(ACCESS_TOKEN);
+    localStorage.removeItem("first_name");
+    setUser(null);
+  }, [setUser]);
+
+  return <Register />;
 }
 
 function App() {
@@ -27,7 +45,8 @@ function App() {
             <Route path="/inscription" element={<RegisterAndLogout />} />
             <Route path="/inscription/confirmation" element={<Registered />} />
             <Route path="/activation/:token" element={<Activation />} />
-            <Route path="/Déconnexion" element={<Logout />} />
+            <Route path="/connexion/" element={<Login />} />
+            <Route path="/deconnexion" element={<Logout />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

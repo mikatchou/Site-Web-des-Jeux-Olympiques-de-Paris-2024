@@ -42,9 +42,6 @@ def test_inscription(api_client, clear_mailbox) :
     assert "Activation de votre compte" in mail_envoyé.subject
     assert "murat.alison@gmail.com" in mail_envoyé.to
     assert str(user.activation_code) in mail_envoyé.body
-    
-    response = api_client.post(url, data, format="json")
-
 
 @pytest.mark.django_db
 def test_email_existant (api_client, clear_mailbox):

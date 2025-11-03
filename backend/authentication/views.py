@@ -1,11 +1,20 @@
-from .serializers import UserSerializer
+from .serializers import *
 from django.core.mail import send_mail
 from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
 from rest_framework.permissions import AllowAny
 from rest_framework import generics, status
+from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
-from authentication.models import CustomUser
+from authentication.models import CustomUser, Authentication
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
+from django.utils.translation import gettext_lazy as _
+from smtplib import SMTPException
+import socket
+import random
 
 class UserCreateView(generics.CreateAPIView):
     serializer_class = UserSerializer
@@ -37,3 +46,252 @@ class UserActivationView(generics.UpdateAPIView):
         user.save()
         
         return Response({"message": "Votre compte a été activé avec succès !"}, status=status.HTTP_200_OK)
+    
+class LoginView(APIView) :  
+    serializer_class = LoginSerializer
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data["email"]
+        password = serializer.validated_data["password"]
+        
+        #Vérification si l'e-mail existe dans la bdd, sinon retourne une erreur
+        user  = CustomUser.objects.filter(email=email).first()
+        if not user :
+            return Response({"error": "Identifiants incorrects"}, status=401)
+        
+        #Obtention ou création d'un objet auth
+        auth, _ = Authentication.objects.get_or_create(
+            user=user
+        )
+        
+        #Vérification si le compte est bloqué temporairement, si oui, retourner forbidden
+        if auth.blocked_until and auth.blocked_until > timezone.now():
+            return Response({"error": "Trop de tentatives, veuillez réessayer ultérieurement"}, status=403)
+        
+        #Vérification du mot de passe et incrémentation de l'essai si incorrect, bloque et retourne forbidden si plus de 10 essais
+        if not user.check_password(password):
+            auth.password_attempt += 1
+            if auth.password_attempt >= 10:
+                auth.blocked_until = timezone.now() + timedelta(seconds=20)
+                auth.password_attempt = 0
+                auth.save()
+                return Response({"error": "Trop de tentatives, veuillez réessayer ultérieurement"}, status=403)
+            auth.save()
+            return Response({"error": "Identifiants incorrects"}, status=401)
+        
+        #Si compte innactive renvoi un mail de confirmation et retourne une erreur
+        if user.is_active == False :
+            activation_link = f"{settings.SITE_URL}/activation/{user.activation_code}"
+            send_mail(
+                subject="Activation de votre compte",
+                message=f"Merci de vous être inscrit. Cliquez sur le lien pour activer votre compte : {activation_link}",
+                from_email= settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )   
+            return Response({"error": "Votre compte n'est pas actif, veuillez cliquer sur le lien d'activation qui vous a été envoyé par e-mail"}, status=401)
+        
+        #si authentication possède déjà un code encore valide (l'utilisateur tente de se connecter plusiers fois), pas de génération de code ou d'envoi de mail
+        if auth.otp_code and auth.expires_at > timezone.now(): 
+            auth_id = auth.pk
+            left = int((auth.expires_at - timezone.now()).total_seconds())
+            return Response({"success": "un code à été déjà envoyé dans votre adresse mail", "auth_id": auth_id, "remaining_time": left}, status=200)
+        
+        try :
+            #Génération d'un code pour la connexion en 2 facteurs et envoi du code par e-mail
+            otp_code = "".join(random.choices("0123456789", k=6))
+            auth.password_attempt = 0
+            auth.blocked_until = None
+            auth.otp_code = otp_code
+            auth.expires_at = timezone.now() + timedelta(seconds=20)
+            send_mail(
+                subject="Connexion en 2 étapes",
+                message=f"Voici votre code pour la validation en 2 étapes  : {otp_code}\nCe code expirera dans 5 minutes.",
+                from_email= settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+            auth.save()
+            auth_id = auth.pk
+            return Response({"success": "un code à été envoyé dans votre adresse mail", "auth_id": auth_id}, status=200)
+        except (SMTPException, socket.gaierror, ConnectionRefusedError, TimeoutError) as e:
+            print("Erreur d'envoi d'email :", e)
+            return Response(
+                status=500
+            )
+    
+class LoginStep2View(APIView):
+    serializer_class = OtpSerializer
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        serializer = OtpSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        auth_id = serializer.validated_data['auth_id']
+        otp_code = serializer.validated_data["otp_code"]
+        
+        #Vérification si l'authentication existe dans la bdd, sinon retourne une erreur
+        try :
+            auth = Authentication.objects.get(id=auth_id)
+        except Authentication.DoesNotExist:
+            return Response(
+                {"error": "Aucune tentative de connexion n'a été trouvée, veuillez réesayer de vous connecter"},
+                status=401
+                )
+        #Vérification si le compte est bloqué temporairement, si oui, retourne l'erreur forbidden
+        if auth.blocked_until and auth.blocked_until > timezone.now():
+            return Response({"error": "Trop de tentatives, veuillez réessayer ultérieurement"}, status=403)
+        
+        #Vérification si le code est bon mais expiré, retourne une erreur
+        if auth.otp_code and auth.otp_code == otp_code and auth.expires_at and auth.expires_at < timezone.now():
+            return Response({"error": "Le code a expiré, veuillez faire une nouvelle demande de code"}, status=401)
+        
+        #Vérification du code et incrémentation de l'essai si incorrect, bloque et retourne forbidden si plus de 10 essais
+        if auth.otp_code != otp_code:
+            auth.code_attempt += 1
+            if auth.code_attempt >= 10:
+                auth.blocked_until = timezone.now() + timedelta(seconds=20)
+                auth.code_attempt = 0
+                auth.expires_at = None
+                auth.save() 
+                return Response({"error": "Trop de tentatives, veuillez réessayer ultérieurement"}, status=403)
+            auth.save()
+            return Response({"error": "Code incorrect"}, status=401)
+        
+        # Récupération de l'utilisateur par l'id et suppression de l'objet authentication après succès de la connexion en 2 étapes
+        user = auth.user  
+        auth.delete()
+
+        #Création des tokens de connexion stateless et retour d'une reponse success avec les tokens
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
+        response = Response({
+                "success": "Connexion validée",
+                "access": str(access_token),
+                "first_name" : user.first_name
+        }, status=200)
+        
+        # Sauvegarde du refresh token dans les cookie en httpOnly pour empêcher l'accès par un malfaiteur
+        response.set_cookie(
+            key="refresh_token",
+            value=str(refresh_token),
+            httponly=True,
+            secure=False,  
+            samesite="Lax",
+        )
+        print("Set refresh_token cookie:", refresh_token)
+        print("Response cookies:", response.cookies)
+
+        return response
+
+class LoginStep2NewCodeView(APIView):
+    permission_classes = [AllowAny]
+    serializer_class = NewOtpSerializer
+    
+    def post(self, request):
+        serializer = NewOtpSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        auth_id = serializer.validated_data['auth_id']
+        
+        #Vérification si l'authentication existe dans la bdd, sinon retourne une erreur
+        try :
+            auth = Authentication.objects.get(id=auth_id)
+        except Authentication.DoesNotExist:
+            return Response(
+                {"error": "Aucune tentative de connexion n'a été trouvée, veuillez réesayer de vous connecter"},
+                status=401
+                )
+        
+        #Vérification si le compte est bloqué temporairement, si oui, retourne l'erreur forbidden
+        if auth.blocked_until and auth.blocked_until > timezone.now():
+            return Response({"error": "Trop de tentatives, veuillez réessayer ultérieurement"}, status=403)
+        
+        #Si authentication possède déjà un code encore valide, pas de génération de code ou d'envoi de mail
+        if auth.otp_code and auth.expires_at and auth.expires_at > timezone.now(): 
+            left = int((auth.expires_at - timezone.now()).total_seconds())
+            minutes = left // 60
+            secondes = left % 60
+            if minutes > 1:
+                remaining_time = f"{minutes} minutes {secondes} secondes"
+            else : 
+                remaining_time = f"{secondes} secondes"
+            return Response(
+                {"success": f"un code à été déjà envoyé dans votre adresse mail, veuillez attendre encore {remaining_time}", 
+                "remaining_time" : left}, 
+                status=200
+                )
+            
+        try : 
+            #Génération d'un code pour la connexion en 2 facteurs et envoi du code par e-mail
+            otp_code = "".join(random.choices("0123456789", k=6))
+            auth.otp_code = otp_code
+            auth.expires_at = timezone.now() + timedelta(seconds=20)
+            user_mail = auth.user.email
+            send_mail(
+                subject="Connexion en 2 étapes",
+                message=f"Voici votre code pour la validation en 2 étapes  : {otp_code}\nCe code expirera dans 5 minutes.",
+                from_email= settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user_mail],
+                fail_silently=False,
+            )
+            auth.save()
+            return Response(
+                {"success": "un code à été envoyé dans votre adresse mail"},
+                status=200
+            )
+        except (SMTPException, socket.gaierror, ConnectionRefusedError, TimeoutError) as e:
+            print("Erreur d'envoi d'email :", e)
+            return Response(
+                {"error": "L'envoi de l'email a échoué. Veuillez réessayer plus tard."},
+                status=500
+            )
+
+class RefreshView(APIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+
+    def post(self, request):
+        
+        # retourne erreur si refresh token n'existe pas
+        refresh_token = request.COOKIES.get("refresh_token")
+        if not refresh_token:
+            return Response({"error": "No refresh token"}, status=401)
+
+        # Tentative de génération d'un nouveau access token à partir du refresh token puis retour à l'utilisateur
+        try:
+            refresh = RefreshToken(refresh_token)
+            user_id = refresh["user_id"]
+            user = CustomUser.objects.get(id=user_id)
+            new_access = str(refresh.access_token)
+
+            return Response({
+                "access": new_access,
+                "first_name": user.first_name
+            }, status=200)
+
+        # retourne une erreur associé au refresh token 
+        except TokenError as e:
+            print("TokenError:", str(e))
+            response = Response(
+                {"error": "Refresh token expired or invalid, please login again"},
+                status=401
+            )
+            response.delete_cookie("refresh_token") 
+            return response
+
+        # retourne erreur si l'utilisateur associé au refresh token n'existe pas
+        except CustomUser.DoesNotExist:
+            response = Response({"error": "User not found"}, status=401)
+            response.delete_cookie("refresh_token")
+            return response
+
+        # retourne tout les autres types d'erreurs dont les précédents ne couvrent pas
+        except Exception as e:
+            print("Unexpected error:", str(e))
+            response = Response({"error": "Invalid refresh token"}, status=401)
+            response.delete_cookie("refresh_token")
+            return response

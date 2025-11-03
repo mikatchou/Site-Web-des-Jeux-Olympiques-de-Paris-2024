@@ -19,8 +19,9 @@ class CustomUser(AbstractUser):
     
 
 class Authentication(models.Model):
-    otp_code = models.CharField(max_length=6)
-    code_attempts = models.IntegerField(default=0)
-    expires_at = models.DateTimeField()
-    user_id = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='authentication')
-    
+    password_attempt = models.IntegerField(default=0)
+    otp_code = models.CharField(max_length=6, null=True, blank=True)
+    code_attempt = models.IntegerField(default=0)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    blocked_until = models.DateTimeField(null=True, blank=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name='authentication')

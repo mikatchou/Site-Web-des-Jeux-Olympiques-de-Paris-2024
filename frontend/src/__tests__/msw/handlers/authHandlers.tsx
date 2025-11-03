@@ -186,4 +186,15 @@ export const authHandlers = [
 
         return HttpResponse.json({"success": "un code à été envoyé dans votre adresse mail"}, {status: 200})
     }),
+
+    http.post("http://127.0.0.1:8000/api/auth/refresh/", () => {
+
+        return HttpResponse.json(
+            {
+                access: "new_access_token",
+                first_name: "Mika"
+            },
+            { status: 200 }
+        )
+    }),
 ]

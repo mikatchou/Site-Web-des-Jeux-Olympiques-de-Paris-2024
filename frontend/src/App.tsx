@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import { ACCESS_TOKEN } from "./constants";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "./components/AuthProvider";
+import NewPassword from "./pages/NewPassword";
 
 function Logout () {
   const { setUser } = useContext(AuthContext);
@@ -46,6 +47,7 @@ function App() {
             <Route path="/inscription/confirmation" element={<Registered />} />
             <Route path="/activation/:token" element={<Activation />} />
             <Route path="/connexion/" element={<Login />} />
+            <Route path="/connexion/mot-de-passe-oublie" element={<NewPassword />} />
             <Route path="/deconnexion" element={<Logout />} />
             <Route path="*" element={<NotFound />} />
           </Route>

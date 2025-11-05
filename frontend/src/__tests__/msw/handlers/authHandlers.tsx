@@ -197,4 +197,45 @@ export const authHandlers = [
             { status: 200 }
         )
     }),
+
+    http.post("http://127.0.0.1:8000/api/auth/ask_new_password/", async ({ request }: { request: Request }) => {
+        const body = await request.json()
+        
+        if (inexistingEmails.includes(body.email)) {
+            return HttpResponse.json(
+                { 
+                error : ["Cet email n'est associé à aucun compte existant"]
+                },
+                { status: 401 }
+            )
+        }
+
+        if (blockedEmails.includes(body.email)) {
+            return HttpResponse.json(
+                { 
+                error : ['Trop de tentatives, veuillez réessayer ultérieurement']
+                },
+                { status: 403 }
+            )
+        }
+
+        return HttpResponse.json({success : "un code à été envoyé dans votre adresse mail"}, {status: 200} )
+    }),
+
+    http.put("http://127.0.0.1:8000/api/auth/new_password/", async ({ request }: { request: Request }) => {
+        const body = await request.json()
+        const blockedMdp = 'BlockedAccount..2025'
+
+            if (blockedMdp.includes(body.password)) {
+                console.log('hello blocked')
+                return HttpResponse.json(
+                { 
+                error : 'Trop de tentatives, veuillez réessayer ultérieurement'
+                },
+                { status: 403 }
+            )
+        }
+
+        return HttpResponse.json({success : "Votre mot de passe a bien été modifié."}, {status: 200})
+    })
 ]

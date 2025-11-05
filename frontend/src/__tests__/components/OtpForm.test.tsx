@@ -19,7 +19,7 @@ describe('connexion: étape 2 - code otp', () => {
     beforeEach(() => {
         render(
             <MemoryRouter>
-                <OtpForm  auth={120} timer={300} setTimer={() => {}}/>
+                <OtpForm setStep={() => {}}  auth={120} timer={300} setTimer={() => {}} forWhich={"login"}/>
             </MemoryRouter>
         );
         otpInput = screen.getByLabelText("otp_input");
@@ -72,7 +72,7 @@ describe("connexion: étape 2 - nouveau code otp", () => {
     beforeEach(() => {
         const utils = render(
         <MemoryRouter>
-            <OtpForm auth={120} timer={null} setTimer={() => {}} />
+            <OtpForm setStep={() => {}}  auth={120} timer={null} setTimer={() => {}} forWhich={"login"}/>
         </MemoryRouter>
         );
         rerender = utils.rerender;
@@ -83,7 +83,7 @@ describe("connexion: étape 2 - nouveau code otp", () => {
 
         rerender(
         <MemoryRouter>
-            <OtpForm auth={authId} timer={null} setTimer={() => {}} />
+            <OtpForm setStep={() => {}}  auth={authId} timer={null} setTimer={() => {}} forWhich={"login"}/>
         </MemoryRouter>
         );
 

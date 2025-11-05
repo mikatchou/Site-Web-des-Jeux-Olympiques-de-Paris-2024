@@ -89,12 +89,15 @@ label {
     transition: all 0.3s ease-in-out;
     text-align: center;
 }
-#login-form {
+#reset-form, #login-form, #new-password-form {
     padding: 100px 100px 0px 100px;
     border-radius: 65px;
 }
 #login-form-row {
     gap: 0px;
+}
+.forgot-link {
+    margin-top: 20px;
 }
 .button-container {
     padding-top: 10px;
@@ -191,7 +194,7 @@ label {
         padding: 30px 30px;
         width: 100%;
     }
-    #login-form, #otp-form{
+    #login-form, #reset-form, #otp-form, #new-password-form{
         padding: 40px 30px 0 30px;
         border-radius: 35px;
         width: 100%;

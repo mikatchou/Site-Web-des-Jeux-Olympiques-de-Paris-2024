@@ -7,12 +7,14 @@ import { ACCESS_TOKEN } from "../constants";
 import { useNavigate, useLocation } from "react-router-dom";
 
 type OtpFormProps = {
+    setStep: React.Dispatch<React.SetStateAction<string>>;
     auth: number | null;
     timer: number | null;
     setTimer: React.Dispatch<React.SetStateAction<number | null>>;
+    forWhich: "login" | "new";
 }
 
-export default function OtpForm ({ auth, timer, setTimer }: OtpFormProps) {
+export default function OtpForm ({setStep, auth, timer, setTimer, forWhich }: OtpFormProps) {
     const [otp, setOtp] = useState<string>("") 
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
@@ -49,14 +51,20 @@ export default function OtpForm ({ auth, timer, setTimer }: OtpFormProps) {
         try {
             const response = await api.post("auth/connexion/etape-2/", {
                 auth_id: auth,
-                otp_code: otp
+                otp_code: otp, 
+                for_which : forWhich
             })
             if (response.status == 200) {
-                setUser(response.data.first_name)
-                localStorage.setItem(ACCESS_TOKEN, response.data["access"])
-                localStorage.setItem("first_name", response.data["first_name"])
-                handleLoginSuccess()
-                return
+                if (forWhich === "login") {
+                    setUser(response.data.first_name)
+                    localStorage.setItem(ACCESS_TOKEN, response.data["access"])
+                    localStorage.setItem("first_name", response.data["first_name"])
+                    handleLoginSuccess()
+                    return
+                } else {
+                    setStep("new")
+                    return
+                }
             }
         } catch (error: any) {
             if (error.response && error.response.data) {

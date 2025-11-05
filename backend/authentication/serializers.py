@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import CustomUser, Authentication
+import re
 
 class UserSerializer(serializers.ModelSerializer):
     
@@ -84,3 +85,42 @@ class OtpSerializer(serializers.Serializer):
     
 class NewOtpSerializer(serializers.Serializer):
     auth_id = serializers.IntegerField()
+    
+class AskNewPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField(
+        error_messages={
+            "required": "Aucun e-mail n’a été fourni.",
+            "invalid": "Format d’e-mail invalide.",
+            "blank": "Aucun e-mail n’a été fourni.",
+        }
+    )
+class NewPasswordSerializer(serializers.Serializer):
+    auth_id = serializers.IntegerField()
+    password = serializers.CharField(
+        error_messages={
+            "required": "Aucun mot de passe n’a été fourni.",
+            "blank": "Aucun mot de passe n’a été fourni.",
+        }
+    )
+    def validate_password(self, value):
+        # Longueur minimale
+        if len(value) < 10:
+            raise serializers.ValidationError("Le mot de passe doit contenir au moins 10 caractères.")
+
+        # Majuscule
+        if not re.search(r"[A-Z]", value):
+            raise serializers.ValidationError("Il doit contenir au moins une majuscule.")
+
+        # Minuscule
+        if not re.search(r"[a-z]", value):
+            raise serializers.ValidationError("Il doit contenir au moins une minuscule.")
+
+        # Chiffre
+        if not re.search(r"[0-9]", value):
+            raise serializers.ValidationError("Il doit contenir au moins un chiffre.")
+
+        # Caractère spécial
+        if not re.search(r"[!@#$%^&*.]", value):
+            raise serializers.ValidationError("Il doit contenir au moins un caractère spécial (!@#$%^&*.)")
+
+        return value

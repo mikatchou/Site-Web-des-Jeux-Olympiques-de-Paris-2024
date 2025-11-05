@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from authentication.models import CustomUser, Authentication
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework.generics import GenericAPIView
 from django.utils.translation import gettext_lazy as _
 from smtplib import SMTPException
 import socket
@@ -75,7 +76,7 @@ class LoginView(APIView) :
         if not user.check_password(password):
             auth.password_attempt += 1
             if auth.password_attempt >= 10:
-                auth.blocked_until = timezone.now() + timedelta(seconds=20)
+                auth.blocked_until = timezone.now() + timedelta(seconds=300)
                 auth.password_attempt = 0
                 auth.save()
                 return Response({"error": "Trop de tentatives, veuillez réessayer ultérieurement"}, status=403)
@@ -106,7 +107,7 @@ class LoginView(APIView) :
             auth.password_attempt = 0
             auth.blocked_until = None
             auth.otp_code = otp_code
-            auth.expires_at = timezone.now() + timedelta(seconds=20)
+            auth.expires_at = timezone.now() + timedelta(seconds=300)
             send_mail(
                 subject="Connexion en 2 étapes",
                 message=f"Voici votre code pour la validation en 2 étapes  : {otp_code}\nCe code expirera dans 5 minutes.",
@@ -153,7 +154,7 @@ class LoginStep2View(APIView):
         if auth.otp_code != otp_code:
             auth.code_attempt += 1
             if auth.code_attempt >= 10:
-                auth.blocked_until = timezone.now() + timedelta(seconds=20)
+                auth.blocked_until = timezone.now() + timedelta(seconds=300)
                 auth.code_attempt = 0
                 auth.expires_at = None
                 auth.save() 
@@ -161,6 +162,10 @@ class LoginStep2View(APIView):
             auth.save()
             return Response({"error": "Code incorrect"}, status=401)
         
+        
+        if request.data.get("for_which") == "new":
+            return Response({"success": "Connexion validée"}, status=200)
+
         # Récupération de l'utilisateur par l'id et suppression de l'objet authentication après succès de la connexion en 2 étapes
         user = auth.user  
         auth.delete()
@@ -229,7 +234,7 @@ class LoginStep2NewCodeView(APIView):
             #Génération d'un code pour la connexion en 2 facteurs et envoi du code par e-mail
             otp_code = "".join(random.choices("0123456789", k=6))
             auth.otp_code = otp_code
-            auth.expires_at = timezone.now() + timedelta(seconds=20)
+            auth.expires_at = timezone.now() + timedelta(seconds=300)
             user_mail = auth.user.email
             send_mail(
                 subject="Connexion en 2 étapes",
@@ -295,3 +300,82 @@ class RefreshView(APIView):
             response = Response({"error": "Invalid refresh token"}, status=401)
             response.delete_cookie("refresh_token")
             return response
+
+class AskNewPasswordView(GenericAPIView):
+    permission_classes = [AllowAny]
+    authentication_classes = []
+    serializer_class = AskNewPasswordSerializer
+    
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.validated_data["email"]
+    
+        try :
+            user = CustomUser.objects.get(email=email)
+        # retourne erreur si l'email n'est associé à aucun compte
+        except CustomUser.DoesNotExist:
+            return Response(
+                {"error": "Cet email n'est associé à aucun compte existant"},
+                status=404
+            )
+            
+        #Vérification si le compte est bloqué temporairement, si oui, retourne l'erreur forbidden
+        auth, _ = Authentication.objects.get_or_create(user=user)
+        if auth.blocked_until and auth.blocked_until > timezone.now():
+            return Response({"error": "Trop de tentatives, veuillez réessayer ultérieurement"}, status=403)
+        
+        #si authentication possède déjà un code encore valide (l'utilisateur tente de se connecter plusiers fois), pas de génération de code ou d'envoi de mail
+        if auth.otp_code and auth.expires_at and auth.expires_at > timezone.now(): 
+            auth_id = auth.pk
+            left = int((auth.expires_at - timezone.now()).total_seconds())
+            return Response({"success": "un code à été déjà envoyé dans votre adresse mail", "auth_id": auth_id, "remaining_time": left}, status=200)
+        
+        try : 
+            #Génération d'un code pour la réinitialisation du mot de passe 
+            otp_code = "".join(random.choices("0123456789", k=6))
+            auth.otp_code = otp_code
+            auth.expires_at = timezone.now() + timedelta(seconds=300)
+            user_mail = auth.user.email
+            send_mail(
+                subject="Réinitialisation de votre mot de passe",
+                message=f"Voici votre code pour la réinitialisation de votre mot de passe  : {otp_code}\nCe code expirera dans 5 minutes.",
+                from_email= settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[user_mail],
+                fail_silently=False,
+            )
+            auth.save()
+            return Response(
+                {"success": "un code à été envoyé dans votre adresse mail", "auth_id" : auth.pk},status=200)
+        except (SMTPException, socket.gaierror, ConnectionRefusedError, TimeoutError) as e:
+            print("Erreur d'envoi d'email :", e)
+            return Response(
+                {"error": "L'envoi de l'email a échoué. Veuillez réessayer plus tard."},
+                status=500
+            )
+
+class AskNewPasswordStep2View(generics.UpdateAPIView):
+    serializer_class = NewPasswordSerializer
+    permission_classes = [AllowAny]
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        auth_id = serializer.validated_data["auth_id"]
+
+        auth = get_object_or_404(Authentication, pk=auth_id)
+        user = auth.user
+        password = serializer.validated_data["password"]
+        
+        #Vérification si le compte est bloqué temporairement, si oui, retourne l'erreur forbidden
+        if auth.blocked_until and auth.blocked_until > timezone.now():
+            return Response({"error": "Trop de tentatives, veuillez réessayer ultérieurement"}, status=403)
+
+        user.set_password(password)
+        user.save()
+        auth.delete()
+
+        return Response(
+            {"success": "Votre mot de passe a bien été modifié."},
+            status=status.HTTP_200_OK
+        )

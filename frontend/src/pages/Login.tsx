@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Login() {
-    const [step, setStep] = useState<"login" | "otp">("login");
+    const [step, setStep] = useState<string>("login");
     const [authId, setAuthId] = useState<number | null>(null);
-    const [timer, setTimer] = useState<number | null>(20);
+    const [timer, setTimer] = useState<number | null>(300);
     const navigate = useNavigate()
     const location = useLocation()
 
@@ -29,7 +29,7 @@ export default function Login() {
             : 
                 <>
                     <h1>Connexion: étape 2</h1>
-                    <OtpForm auth={authId} timer={timer} setTimer={setTimer}/> 
+                    <OtpForm setStep={setStep} auth={authId} timer={timer} setTimer={setTimer} forWhich={"login"}/> 
                 </>
         }
     </>

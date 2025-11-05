@@ -1,9 +1,10 @@
 import React, { useState, } from "react"
 import LoadingIndicator from "./LoadingIndicator"
+import { Link } from "react-router-dom";
 import type { FormEvent } from 'react'
 import api from "../api"
 
-export default function LoginForm ({ setAuth, setStep, setTimer }: { setAuth: React.Dispatch<React.SetStateAction<number | null>>; setStep: React.Dispatch<React.SetStateAction<"login" | "otp">>; setTimer: React.Dispatch<React.SetStateAction<number | null>> }) {
+export default function LoginForm ({ setAuth, setStep, setTimer }: { setAuth: React.Dispatch<React.SetStateAction<number | null>>; setStep: React.Dispatch<React.SetStateAction<string>>; setTimer: React.Dispatch<React.SetStateAction<number | null>> }) {
 
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
@@ -94,6 +95,7 @@ export default function LoginForm ({ setAuth, setStep, setTimer }: { setAuth: Re
                 </p>
                 <div className="button-container">
                     <button aria-label="bouton_connexion" type='submit' className="submit" id='submit'>Me connecter</button>
+                    <Link className="forgot-link" to="/connexion/mot-de-passe-oublie">Mot de passe oublié</Link>
                     <div className="loading-error-container">
                         <p className={`err ${error ? "show" : ""}`}>
                             {error}

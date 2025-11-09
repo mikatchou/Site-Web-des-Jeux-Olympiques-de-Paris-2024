@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework_simplejwt',
     'authentication',
+    'events.apps.EventsConfig',
 ]
 
 MIDDLEWARE = [
@@ -167,3 +168,6 @@ CORS_ALLOWED_ORIGINS = [
 CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

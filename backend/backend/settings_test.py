@@ -1,9 +1,6 @@
 from .settings import *
+import tempfile
+from pathlib import Path
 
-DATABASES = {
-    "default": {
-        "ENGINE": 
-            "django.db.backends.sqlite3",
-            "NAME": ":memory",
-        }
-}
+MEDIA_ROOT = Path(tempfile.mkdtemp())
+

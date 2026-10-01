@@ -1,5 +1,5 @@
-import { it, expect, describe, beforeEach, vi } from 'vitest'
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { it, expect, describe, beforeEach } from 'vitest'
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import '@testing-library/jest-dom'
 import Disciplines from '../../components/Disciplines';

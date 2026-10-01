@@ -11,7 +11,6 @@ describe("Register Page", () => {
                 <Register />
             </MemoryRouter>
         )
-        screen.debug();
         expect(await screen.findByText("Inscription")).toBeInTheDocument();
         expect(await screen.findByText("Créer mon compte")).toBeInTheDocument();
     })

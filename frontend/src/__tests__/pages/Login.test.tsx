@@ -23,7 +23,6 @@ describe("Login Page", () => {
                 <Login />
             </MemoryRouter>
         )
-        screen.debug();
         expect(await screen.findByText(/Connexion/i)).toBeInTheDocument();
     });
 
@@ -35,7 +34,6 @@ describe("Login Page", () => {
         )
         const button = await screen.findByText("Passer à OTP");
         fireEvent.click(button);
-        screen.debug();
         expect(await screen.findByText("Connexion: étape 2")).toBeInTheDocument();
     });
 });

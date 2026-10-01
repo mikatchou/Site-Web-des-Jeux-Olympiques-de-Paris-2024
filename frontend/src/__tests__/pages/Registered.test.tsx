@@ -11,7 +11,6 @@ describe("Registered Page", () => {
                 <Registered />
             </MemoryRouter>
         )
-        screen.debug();
         expect(await screen.findByText(/Votre compte viens d'être crée !/i)).toBeInTheDocument();
     })
 })

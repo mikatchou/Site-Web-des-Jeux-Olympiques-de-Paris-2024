@@ -1,0 +1,71 @@
+.disciplines_container {
+    border-radius: 35px;
+    background-color: var(--color-form-background);
+    box-shadow: 0 0 4px rgb(171, 170, 170);
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+    padding: 50px;
+}
+.disciplines_grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    place-items: center; 
+}
+.discipline_card {
+    width: 190px;
+    height: 250px;
+    border-radius: 35px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 4px ;
+    overflow: hidden;
+    transition: 200ms;
+}
+.discipline_card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 10px ;
+    cursor: pointer;
+}
+.discipline_image {
+    width: 100%;
+}
+.discipline_image img {
+    object-fit: cover;
+    width: 100%;
+    filter: brightness(0) saturate(100%) invert(19%) sepia(95%) saturate(2794%) hue-rotate(187deg) brightness(92%) contrast(102%);
+}
+.discipline_name {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    text-align: center;
+}
+h3 {
+    text-align: center;
+}
+.more_less_button {
+    background-color: transparent;
+    color: var(--color-primary);
+    font-weight: bold;
+    font-size: 18px;
+}
+
+@media (max-width: 700px) {
+    .disciplines_container {
+        padding: 30px;
+    }
+    .discipline_card {
+        width: 140px;
+        height: 200px;
+    }
+    .disciplines_grid {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    }
+
+}

@@ -11,7 +11,6 @@ describe("NotFound page", () => {
                 <NotFound />
             </MemoryRouter>
         )
-        screen.debug();
         expect(await screen.findByText("Désolé, la page recherchée n'existe pas..")).toBeInTheDocument();
     })
 })

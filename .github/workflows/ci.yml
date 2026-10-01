@@ -55,7 +55,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd="pg_isready -U user -d test_db"
+          --health-cmd="pg_isready -U local_admin -d local_db"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -79,7 +79,13 @@ jobs:
         run: |
           ./venv/bin/pytest --tb=short -v
         env:
-          DJANGO_SETTINGS_MODULE: backend.settings
+          DJANGO_SETTINGS_MODULE: backend.settings_test
+          DJANGO_SECRET_KEY: "cle-jetable-pour-la-ci"
+          DB_NAME: local_db
+          DB_USER: local_admin
+          DB_PASSWORD: local_password
+          DB_HOST: 127.0.0.1
+          DB_PORT: "5432"
 
   merge-if-tests-pass:
     needs: [backend, frontend]

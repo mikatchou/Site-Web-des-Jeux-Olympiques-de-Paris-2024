@@ -11,6 +11,7 @@ import { ACCESS_TOKEN } from "./constants";
 import { useContext, useEffect } from "react";
 import { AuthContext } from "./components/AuthProvider";
 import NewPassword from "./pages/NewPassword";
+import Result from "./pages/Result";
 
 function Logout () {
   const { setUser } = useContext(AuthContext);
@@ -50,6 +51,7 @@ function App() {
             <Route path="/connexion/mot-de-passe-oublie" element={<NewPassword />} />
             <Route path="/deconnexion" element={<Logout />} />
             <Route path="*" element={<NotFound />} />
+            <Route path="/recherche" element={<Result />} />  
           </Route>
         </Routes>
       </BrowserRouter>

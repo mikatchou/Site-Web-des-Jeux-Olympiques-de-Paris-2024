@@ -5,6 +5,7 @@ import Logo from "../assets/images/Logo petit.png";
 import { Link, useNavigate } from "react-router-dom";
 import { IoCartOutline, IoClose, IoMenu } from "react-icons/io5";
 import { FaCircleUser } from "react-icons/fa6";
+import SearchBar from "./SearchBar";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,7 +14,7 @@ export default function Header() {
     const [lastScrollY, setLastScrollY] = useState(0);
     const menuRef = useRef<HTMLElement | null>(null)
     const userMenuRef = useRef<HTMLElement | null>(null)
-    const iconStyle = { width: '35px', height: '35px', color: 'white' };
+    const iconStyle = { width: '2.8rem', height: '2.8rem', color: 'white' };
     const {isAuthenticated, user} = useContext(AuthContext)
 
     useEffect(() => {
@@ -64,7 +65,7 @@ export default function Header() {
             <img id="logo" src={Logo} alt="Logo des jeux olympiques de Paris 2024" />
             </Link>
         </div>
-        <div id="searchBar"></div>
+        <SearchBar menuIsOpen={setIsMenuOpen}/>
         <div id="navigation">
             <div id="panier">
             <button id="cartbutton" aria-label="">
@@ -73,7 +74,7 @@ export default function Header() {
             </div>
             <div id="user">
             <button id="userbutton" aria-label="Bouton menu utilisateur" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>
-                {isUserMenuOpen ? <IoClose style={iconStyle} /> : <FaCircleUser style={iconStyle} />}
+                {isUserMenuOpen ? <IoClose style={iconStyle} /> : <FaCircleUser id="user-icon" style={iconStyle} />}
             </button>
             </div>
             <div id="block-menu">
@@ -84,6 +85,7 @@ export default function Header() {
         </div>
 
         <nav aria-label="Menu principal" ref={menuRef} id="menu" className={isMenuOpen ? "menu open" : "menu closed"} data-testid="main-menu">
+            <SearchBar className="mobile-" menuIsOpen={setIsMenuOpen}/>
             <ul className="menu-list">
             <li className="menu-puce"><Link to="/" onClick={() => {setIsMenuOpen(false); goToLogin()}}>Accueil</Link></li>
             <li className="menu-puce"><Link to="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link></li>

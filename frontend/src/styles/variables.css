@@ -6,6 +6,7 @@
     --color-background: #F1F9FF;
     --linear: linear-gradient(90deg, var(--color-primary) 0%, #00203A 100%);
     --linear-down: linear-gradient(360deg, var(--color-primary) 0%, #00203A 100%);
+    --color-tertiary-line: #4899db;
 }
 
 *,

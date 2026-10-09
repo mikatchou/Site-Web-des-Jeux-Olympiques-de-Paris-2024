@@ -93,6 +93,6 @@ class SearchEventSerializer (serializers.ModelSerializer) :
     categories = SearchCategorySerializer(many=True)
     class Meta :
         model = Event
-        fields = ["date", "discipline", "venue", "teams", "players", "categories"]
+        fields = ["id", "date", "discipline", "venue", "teams", "players", "categories"]
 
 

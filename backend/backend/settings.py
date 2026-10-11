@@ -136,11 +136,13 @@ AUTH_USER_MODEL = 'authentication.CustomUser'
 MAILERS = {
     "default": {
         "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
-        "HOST": "smtp.gmail.com",
-        "PORT": 587,
-        "USERNAME": os.getenv("EMAIL_HOST_USER", ""),
-        "PASSWORD": os.getenv("EMAIL_HOST_PASSWORD", ""),
-        "USE_TLS": True,
+        "OPTIONS": {
+            "host": "smtp.gmail.com",
+            "port": 587,
+            "username": os.getenv("EMAIL_HOST_USER", ""),
+            "password": os.getenv("EMAIL_HOST_PASSWORD", ""),
+            "use_tls": True,
+        },
     },
 }
 

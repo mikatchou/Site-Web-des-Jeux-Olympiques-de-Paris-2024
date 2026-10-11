@@ -1,7 +1,5 @@
 import axios from "axios"
 import { ACCESS_TOKEN } from "./constants";
-import { useContext } from "react";
-import { AuthContext } from "./components/AuthProvider";
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -41,14 +39,11 @@ api.interceptors.response.use(
                 try {
                     const res = await api.post("auth/refresh/", {}, { headers: {} })
                     const newAccess = res.data.access
-                    localStorage.setItem(ACCESS_TOKEN, newAccess)
+                    localStorage.setItem(ACCESS_TOKEN, newAccess);
+                    localStorage.setItem("first_name", res.data.first_name);
                     originalRequest.headers["Authorization"] = `Bearer ${newAccess}`
-                    const { setUser } = useContext(AuthContext)
-                    setUser(res.data.first_name)
                     return api(originalRequest)
                 } catch (refreshError) {
-                    console.error("Échec du refresh, déconnexion...")
-                    console.log(refreshError)
                     localStorage.removeItem(ACCESS_TOKEN)
                 }
             }

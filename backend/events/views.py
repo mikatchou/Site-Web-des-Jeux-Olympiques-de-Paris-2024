@@ -6,12 +6,14 @@ from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.filters import SearchFilter
 
 class DisciplineView (ListAPIView) :
+    authentication_classes = []
     permission_classes = [AllowAny]
     queryset = Discipline.objects.all()
     serializer_class = DisciplineSerializer
     pagination_class = None
 
 class SearchEeventByDisciplineView (ListAPIView) :
+    authentication_classes = []
     permission_classes = [AllowAny]
     queryset = Event.objects.all()
     serializer_class = SearchEventSerializer

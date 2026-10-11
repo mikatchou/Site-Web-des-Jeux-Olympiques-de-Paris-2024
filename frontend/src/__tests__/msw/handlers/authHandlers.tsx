@@ -30,7 +30,6 @@ export const authHandlers = [
             { status: 400 }
         )
         }
-        console.log(body)
         return HttpResponse.json(
             {message: "OK"}, 
             { status: 201 }
@@ -227,7 +226,6 @@ export const authHandlers = [
         const blockedMdp = 'BlockedAccount..2025'
 
             if (blockedMdp.includes(body.password)) {
-                console.log('hello blocked')
                 return HttpResponse.json(
                 { 
                 error : 'Trop de tentatives, veuillez réessayer ultérieurement'

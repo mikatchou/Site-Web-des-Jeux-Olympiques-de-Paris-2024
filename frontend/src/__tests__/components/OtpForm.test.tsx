@@ -17,6 +17,7 @@ describe('connexion: étape 2 - code otp', () => {
     let otpInput: HTMLElement;
     let bouton: HTMLElement;
     beforeEach(() => {
+        localStorage.clear();
         render(
             <MemoryRouter>
                 <OtpForm setStep={() => {}}  auth={120} timer={300} setTimer={() => {}} forWhich={"login"}/>

@@ -70,7 +70,6 @@ export default function RegisterForm() {
         const form = e.target as HTMLFormElement
         const formData = new FormData(form)
         const data = Object.fromEntries(formData.entries())
-        console.log(data)
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
         if (!emailRegex.test(data.email as string)) {

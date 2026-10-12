@@ -38,7 +38,7 @@ export default function Disciplines() {
 
             <div className="disciplines_grid">
                 {displayed.map((d) => (
-                    <div key={d.id} className="discipline_card" onClick={() => navigate(`/recherche/?discipline=${d.id}`)}>
+                    <div key={d.id} className="discipline_card" onClick={() => navigate(`/recherche/?discipline=${d.name}`)}>
                         <div className="discipline_image">
                             <img src={d.image} alt={d.name} />
                         </div>

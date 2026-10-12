@@ -11,3 +11,4 @@ python-dotenv
 pytest
 pytest-django
 pillow
+model_bakery

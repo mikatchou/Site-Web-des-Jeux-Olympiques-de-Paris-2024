@@ -79,7 +79,6 @@ export default function OtpForm ({setStep, auth, timer, setTimer, forWhich }: Ot
                     return
                 }
             } else {
-                console.log(error)
                 setError("Erreur réseau ou serveur injoignable.")
                 setLoading(false)
                 return
@@ -105,7 +104,6 @@ export default function OtpForm ({setStep, auth, timer, setTimer, forWhich }: Ot
                 auth_id: auth,
             })
             if (response.status == 200) {
-                console.log(response.data)
                 setTimer(20)
                 return
             }

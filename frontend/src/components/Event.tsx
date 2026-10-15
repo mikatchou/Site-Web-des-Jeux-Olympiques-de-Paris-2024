@@ -52,7 +52,7 @@ export default function Event({ data }: EventProps) {
             </div>
 
             <div className="button-div">
-                <Link to={`recherche/billet/${data.id}`} className="discipline-details-button">Voir les billets</Link>
+                <Link to={`/recherche/billet/${data.id}`} className="discipline-details-button">Voir les billets</Link>
             </div>
         </div>
     </>

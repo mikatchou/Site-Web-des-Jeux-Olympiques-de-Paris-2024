@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 import "../styles/home.css";
+import LoadingIndicator from "./LoadingIndicator";
 
 export default function Disciplines() {
     type Discipline = {
@@ -14,12 +15,14 @@ export default function Disciplines() {
     const [showAll, setShowAll] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate()
+    const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         const getDisciplines = async () => {
             try {
                 const response = await api.get("events/disciplines/");
                 setDisciplines(response.data);
+                setLoading(false)
             } catch (err: any) {
                 setError("Erreur réseau ou serveur injoignable.");
             }
@@ -33,7 +36,7 @@ export default function Disciplines() {
     return (
         <div className="disciplines_container">
             <h3>Trouvez votre discipline</h3>
-
+            {loading && <LoadingIndicator />}
             {error && <p>{error}</p>}
 
             <div className="disciplines_grid">

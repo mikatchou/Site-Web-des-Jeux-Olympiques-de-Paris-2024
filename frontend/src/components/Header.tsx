@@ -14,7 +14,6 @@ export default function Header() {
     const [lastScrollY, setLastScrollY] = useState(0);
     const menuRef = useRef<HTMLElement | null>(null)
     const userMenuRef = useRef<HTMLElement | null>(null)
-    const iconStyle = { width: '2.8rem', height: '2.8rem', color: 'white' };
     const {isAuthenticated, user} = useContext(AuthContext)
 
     useEffect(() => {
@@ -69,17 +68,17 @@ export default function Header() {
         <div id="navigation">
             <div id="panier">
             <button id="cartbutton" aria-label="">
-                <IoCartOutline style={iconStyle}/>
+                <IoCartOutline className="menu-svg"/>
             </button>
             </div>
             <div id="user">
             <button id="userbutton" aria-label="Bouton menu utilisateur" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>
-                {isUserMenuOpen ? <IoClose style={iconStyle} /> : <FaCircleUser id="user-icon" style={iconStyle} />}
+                {isUserMenuOpen ? <IoClose className="menu-svg" /> : <FaCircleUser id="user-icon" className="menu-svg" />}
             </button>
             </div>
             <div id="block-menu">
             <button id="menubutton" aria-label="Bouton menu principal" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                {isMenuOpen ? <IoClose style={iconStyle} /> : <IoMenu style={iconStyle} />}
+                {isMenuOpen ? <IoClose className="menu-svg" /> : <IoMenu className="menu-svg" />}
             </button>
             </div>
         </div>

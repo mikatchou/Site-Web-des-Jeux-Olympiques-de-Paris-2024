@@ -15,7 +15,7 @@ describe("Result Page", () => {
             </MemoryRouter>
         )
         expect(screen.getByText(/Résultat pour :/i)).toBeInTheDocument();
-        expect(screen.findByText(/Athlétisme0/i))
+        expect(await screen.findByText(/Athlétisme10/i)).toBeInTheDocument();
     })
     it("Affichage des événements suivants", async () => {
         let bouttonPlus: HTMLElement;

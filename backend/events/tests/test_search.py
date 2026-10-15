@@ -91,5 +91,5 @@ def test_get_filtered_events_and_filters(event_with_data):
     country = event["teams"][0]["country"]["name"]
     assert country == "France"
     assert "filters" in data
-    country_filter = data["filters"]["countries"][0]["name"]
+    country_filter = data["filters"]["countries"][0]
     assert "France" in country_filter

@@ -57,7 +57,9 @@ class SearchEeventByDisciplineView (ListAPIView) :
             ).distinct()
             
         return {
-            "countries": list(countries.values("name", "code").order_by("name")),
+            "countries": list(
+                countries.values_list("name", flat=True).distinct().order_by("name")
+            ),
             "disciplines": list(
                 events.values_list("discipline__name", flat=True).distinct().order_by("discipline__name")
             ),

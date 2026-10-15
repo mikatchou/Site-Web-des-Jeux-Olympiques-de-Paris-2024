@@ -10,11 +10,12 @@ def event_with_data(db):
     
     football = baker.make("events.Discipline", name="Football")
     basketball = baker.make("events.Discipline", name="Basketball")
+    france = baker.make("events.Country", name="France", code="FRA")
     
     for discipline in [football] * 2 + [basketball] * 3:
         event = baker.make(Event, discipline=discipline)
-        team = baker.make(Team, events=[event])
-        baker.make(Player, team=team, events=[event])
+        team = baker.make("events.Team", country=france, events=[event])
+        baker.make("events.Player",team=team,country=france,events=[event])
         category = baker.make(Category, event=event)
         baker.make(Offer, category=category)
         events.append(event)
@@ -51,10 +52,44 @@ def test_get_events(event_with_data):
     assert data["count"] == 2
     
     event = data["results"][0]
-    print(event)
     assert "date" in event
     assert "discipline" in event
     assert "venue" in event
     assert len(event["teams"]) == 1
     assert len(event["players"]) == 1
     assert len(event["categories"]) == 1
+    
+@pytest.mark.django_db
+def test_get_events(event_with_data):
+    api = APIClient()
+    url = reverse('search')
+    response = api.get(url, {"discipline": "Football"})
+    
+    assert response.status_code == 200
+    data = response.json()
+    
+    assert data["count"] == 2
+    
+    event = data["results"][0]
+    assert "date" in event
+    assert "discipline" in event
+    assert "venue" in event
+    assert len(event["teams"]) == 1
+    assert len(event["players"]) == 1
+    assert len(event["categories"]) == 1
+
+@pytest.mark.django_db
+def test_get_filtered_events_and_filters(event_with_data):
+    api = APIClient()
+    url = reverse('search')
+    response = api.get(url, {"discipline": "Football", "country": "france" })
+    
+    assert response.status_code == 200
+    data = response.json()
+    assert data["count"] == 2
+    event = data["results"][0]
+    country = event["teams"][0]["country"]["name"]
+    assert country == "France"
+    assert "filters" in data
+    country_filter = data["filters"]["countries"][0]
+    assert "France" in country_filter

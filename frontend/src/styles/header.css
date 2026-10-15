@@ -46,17 +46,26 @@ header > * {
   align-items: center;
   gap: 25px;
   height: 100%;
+  justify-content: center;
 }
 #navigation > div {
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 #navigation > div > button {
   background: none;
   transition: 200ms;
+  display: flex;
+  align-items: center;
 }
 #navigation > div > button:hover {
   transform: scale(1.1);
+}
+.menu-svg {
+  width: 2.8rem; 
+  height: 2.8rem; 
+  color: white;
 }
 .menu {
   position: absolute;
@@ -178,9 +187,9 @@ li:hover {
     height: 2rem !important;
     width: 2rem !important;
   }
-  svg {
-    height: 2.2rem !important;
-    width: 2.2rem !important;
+  .menu-svg {
+    height: 2.2rem;
+    width: 2.2rem;
   }
   main {
     padding: 50px 20px;

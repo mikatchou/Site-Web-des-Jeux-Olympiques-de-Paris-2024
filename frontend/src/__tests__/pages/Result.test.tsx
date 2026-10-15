@@ -8,14 +8,17 @@ import "@testing-library/jest-dom/vitest";
 
 describe("Result Page", () => {
 
-    it("La page de résultat affiche les événements", async () => {
+    it("La page de résultat affiche les événements et le filtre", async () => {
         render(
             <MemoryRouter initialEntries={["/recherche?discipline=football"]}>
                 <Result />
             </MemoryRouter>
         )
         expect(screen.getByText(/Résultat pour :/i)).toBeInTheDocument();
-        expect(screen.findByText(/Athlétisme0/i))
+        expect(await screen.findByText(/Athlétisme10/i)).toBeInTheDocument();
+        expect(
+            screen.queryByRole("button", { name: /football/i })
+        ).toBeInTheDocument();
     })
     it("Affichage des événements suivants", async () => {
         let bouttonPlus: HTMLElement;

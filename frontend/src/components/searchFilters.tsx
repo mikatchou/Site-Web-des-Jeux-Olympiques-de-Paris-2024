@@ -23,11 +23,9 @@ export default function SearchFilters({ filters, setDate, setDiscipline, setVill
         }
     }
     const deleteFilter = (name: string) => {
-        console.log(name)
         switch (name) {
             case "discipline":
                 setDiscipline("");
-                console.log(name, "  ", discipline)
                 break;
             case "ville":
                 setVille("");
@@ -84,7 +82,7 @@ export default function SearchFilters({ filters, setDate, setDiscipline, setVill
                         const isOpen = openFilter === name;
 
                         return (
-                            <div className="filter-div">
+                            <div key={name} className="filter-div">
                                 <button
                                     type="button"
                                     className={`filter-button filter-button-${name}`}

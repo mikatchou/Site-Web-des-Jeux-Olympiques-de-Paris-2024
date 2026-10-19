@@ -12,6 +12,7 @@ import { useContext, useEffect } from "react";
 import { AuthContext } from "./components/AuthProvider";
 import NewPassword from "./pages/NewPassword";
 import Result from "./pages/Result";
+import EventDetails from "./pages/EventDetails";
 
 function Logout () {
   const { setUser } = useContext(AuthContext);
@@ -52,6 +53,7 @@ function App() {
             <Route path="/deconnexion" element={<Logout />} />
             <Route path="*" element={<NotFound />} />
             <Route path="/recherche" element={<Result />} />  
+            <Route path="/recherche/billet/:id" element={<EventDetails />} />  
           </Route>
         </Routes>
       </BrowserRouter>

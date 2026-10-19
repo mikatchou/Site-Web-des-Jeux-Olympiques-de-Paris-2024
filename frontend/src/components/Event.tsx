@@ -1,10 +1,11 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { type EventResult } from "../types/EventType";
 
 type EventProps = {
     data: EventResult
 }
 export default function Event({ data }: EventProps) {
+    const location = useLocation();
 
     const price = data.categories[0].offers[0] ? data.categories[0].offers[0].price : ""
     const date = new Date(data.date);
@@ -34,7 +35,7 @@ export default function Event({ data }: EventProps) {
                 <div className="countries-date-div">
                     <div className="countries-name-div">
                         <p className="countries-name">
-                            {data.teams.length > 0 && `${data.teams[0].country.code} - ${data.teams[1].country.code}`}
+                            {data.teams && data.teams.length >= 2 && `${data.teams[0].country.code} - ${data.teams[1].country.code}`}
                         </p>
                     </div>
                     <div className="date-div">
@@ -45,14 +46,20 @@ export default function Event({ data }: EventProps) {
                 <div className="prix-div">
                     <p className="prix-titre">A partir de</p>
                     <div className="prix-titre-euros-div">
-                        <p className="prix-titre">{price && price }</p>
+                        <p className="prix-titre">{price && price}</p>
                         <p className="prix-euros">euros</p>
                     </div>
                 </div>
             </div>
 
             <div className="button-div">
-                <Link to={`recherche/billet/${data.id}`} className="discipline-details-button">Voir les billets</Link>
+                <Link
+                    to={`/recherche/billet/${data.id}`}
+                    state={{ from: `${location.pathname}${location.search}` }}
+                    className="discipline-details-button"
+                >
+                    Voir les billets
+                </Link>
             </div>
         </div>
     </>

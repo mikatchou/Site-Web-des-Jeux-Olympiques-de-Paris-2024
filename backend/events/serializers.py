@@ -94,5 +94,20 @@ class SearchEventSerializer (serializers.ModelSerializer) :
     class Meta :
         model = Event
         fields = ["id", "date", "discipline", "venue", "teams", "players", "categories"]
+        
+class EventDetailsCategorySerializer(serializers.ModelSerializer):
+    offers = OfferSerializer(many=True)
+    class Meta:
+        model = Category
+        fields = ["id", "name", "total_seats", "available_seats", "offers"]
 
+class EventDetailsSerializer (serializers.ModelSerializer) :
+    discipline = DisciplineSerializer()
+    venue = VenueSerializer()
+    teams = SearchTeamSerializer(many=True)
+    players = SearchPlayerSerializer(many=True)
+    categories = EventDetailsCategorySerializer(many=True)
+    class Meta :
+        model = Event
+        fields = ["id", "date", "discipline", "venue", "teams", "players", "categories"]
 

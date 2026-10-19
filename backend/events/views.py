@@ -1,7 +1,9 @@
+from urllib import request
+
 from django.shortcuts import render
 from rest_framework.generics import ListAPIView, ListCreateAPIView
 from .models import Discipline, Event, Country
-from .serializers import DisciplineSerializer, SearchEventSerializer
+from .serializers import DisciplineSerializer, EventDetailsSerializer, SearchEventSerializer
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.filters import SearchFilter
 from django.db.models import Q
@@ -75,3 +77,13 @@ class SearchEeventByDisciplineView (ListAPIView) :
         response = super().list(request, *args, **kwargs)
         response.data["filters"] = self.get_filters()
         return response
+
+class ListEventDetailsView (ListAPIView) :
+    authentication_classes = []
+    serializer_class = EventDetailsSerializer
+    permission_classes = [AllowAny]
+    queryset = Event.objects.all()
+    pagination_class = None
+    
+    def get_queryset(self):
+        return Event.objects.filter(id=self.kwargs["id"])

@@ -8,7 +8,7 @@ import { useCart } from "./CartContext";
 import { AuthContext } from "./AuthProvider";
 import { Link } from "react-router-dom";
 import LoadingIndicator from "./LoadingIndicator";
-import { BsCartCheck, BsCartCheckFill } from "react-icons/bs";
+import { BsCartCheckFill } from "react-icons/bs";
 
 type dataProps = {
     data: EventResult

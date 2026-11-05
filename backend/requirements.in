@@ -13,3 +13,4 @@ pytest-django
 pillow
 model_bakery
 pytest-cov
+celery[redis]

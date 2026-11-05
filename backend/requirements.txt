@@ -11,6 +11,8 @@ asgiref==3.12.1
     #   django-cors-headers
 colorama==0.4.6
     # via pytest
+coverage[toml]==7.17.2
+    # via pytest-cov
 django==6.1.1
     # via
     #   -r requirements.in
@@ -35,7 +37,9 @@ packaging==26.3
 pillow==12.3.0
     # via -r requirements.in
 pluggy==1.6.0
-    # via pytest
+    # via
+    #   pytest
+    #   pytest-cov
 psycopg2-binary==2.9.13
     # via -r requirements.in
 pygments==2.21.0
@@ -47,7 +51,10 @@ pyjwt==2.15.1
 pytest==9.1.1
     # via
     #   -r requirements.in
+    #   pytest-cov
     #   pytest-django
+pytest-cov==7.1.0
+    # via -r requirements.in
 pytest-django==4.14.0
     # via -r requirements.in
 python-dotenv==1.2.4

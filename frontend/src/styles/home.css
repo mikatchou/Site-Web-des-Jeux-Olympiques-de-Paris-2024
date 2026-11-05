@@ -55,17 +55,41 @@ h3 {
     font-weight: bold;
     font-size: 18px;
 }
+@media (max-width: 800px) {
+    .disciplines_container {
+        padding: 30px;
+    }
+    .discipline_card {
+        width: 130px;
+        height: 180px;
+    }
+    .discipline_name {
+        font-size: 2vw;
+        padding: 0.5vw;
+        white-space: wrap;
+    }
+    .disciplines_grid {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    }
+}
 
 @media (max-width: 700px) {
     .disciplines_container {
         padding: 30px;
     }
     .discipline_card {
-        width: 140px;
+        width: 150px;
         height: 200px;
     }
     .disciplines_grid {
         grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     }
+}
 
+@media (max-width: 600px) {
+        .discipline_name {
+        font-size: 4vw;
+        padding: 0.5vw;
+        white-space: wrap;
+    }
 }

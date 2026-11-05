@@ -1,5 +1,5 @@
 import "./styles/variables.css";
-import { BrowserRouter, Routes, Route, Navigate} from "react-router-dom"
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import MainLayout from "./components/MainLayout"
 import Home from "./pages/Home"
 import Register from "./pages/Register"
@@ -13,20 +13,26 @@ import { AuthContext } from "./components/AuthProvider";
 import NewPassword from "./pages/NewPassword";
 import Result from "./pages/Result";
 import EventDetails from "./pages/EventDetails";
+import { useCart } from "./components/CartContext";
 
-function Logout () {
+function Logout() {
   const { setUser } = useContext(AuthContext);
+  const { deleteCart } = useCart()
 
   useEffect(() => {
-    localStorage.removeItem(ACCESS_TOKEN);
-    localStorage.removeItem("first_name");
-    setUser(null);
+    async function logout() {
+      await deleteCart();
+      localStorage.removeItem(ACCESS_TOKEN);
+      localStorage.removeItem("first_name");
+      setUser(null);
+    }
+    void logout();
   }, [setUser]);
 
   return <Navigate to="/" />;
 }
 
-function RegisterAndLogout () {
+function RegisterAndLogout() {
   const { setUser } = useContext(AuthContext);
 
   useEffect(() => {
@@ -41,7 +47,7 @@ function RegisterAndLogout () {
 function App() {
   return (
     <>
-      <BrowserRouter> 
+      <BrowserRouter>
         <Routes>
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
@@ -52,8 +58,8 @@ function App() {
             <Route path="/connexion/mot-de-passe-oublie" element={<NewPassword />} />
             <Route path="/deconnexion" element={<Logout />} />
             <Route path="*" element={<NotFound />} />
-            <Route path="/recherche" element={<Result />} />  
-            <Route path="/recherche/billet/:id" element={<EventDetails />} />  
+            <Route path="/recherche" element={<Result />} />
+            <Route path="/recherche/billet/:id" element={<EventDetails />} />
           </Route>
         </Routes>
       </BrowserRouter>

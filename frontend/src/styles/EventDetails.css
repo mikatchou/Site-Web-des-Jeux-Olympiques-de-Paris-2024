@@ -246,6 +246,13 @@ main {
     font-size: 1.3rem;
     transition: 150ms;
 }
+.add-button-div > .loading-container {
+    margin: 0;
+}
+.add-button-div > .loading-container > .loader {
+    height: 32.5px;
+    width: 32.5px ;
+}
 .add-button:hover {
     background: var(--linear-down);
     transform: scale(1.02);
@@ -257,7 +264,7 @@ main {
     gap: 0.8rem;
     padding: 0.7rem 1.3rem;
     border-radius: 1.2rem;
-    background-color: rgba(128, 127, 127, 0.75);
+    background: var(--linear-anavailable);
     color: rgb(255, 255, 255);
     font-size: 1.3rem;
     cursor: default;
@@ -301,6 +308,47 @@ main {
     color: #222;
     font-size: 1.7rem;
     cursor: pointer;
+}
+.login-popup-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background: rgb(0 0 0 / 55%);
+}
+
+.login-popup {
+    position: relative;
+    width: min(100%, 28rem);
+    padding: 2rem;
+    border-radius: 1rem;
+    background: white;
+    text-align: center;
+    box-shadow: 0 0.5rem 2rem rgb(0 0 0 / 20%);
+}
+
+.login-popup-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    border: 0;
+    background: transparent;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+#login-popup-title {
+    margin-bottom: 0.9rem;
+}
+.login-popup-link {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.7rem 1.4rem;
+    border-radius: 1.5rem;
+    background: var(--linear);
+    color: white;
+    text-decoration: none;
 }
 @media (max-width: 1300px) {
     main {
@@ -566,6 +614,10 @@ main {
     }
     .add-button > svg, .unavailable-add-button > svg {
         font-size: 4.5vw;
+    }
+    .add-button-div > .loading-container > .loader {
+        height: 9.5vw;
+        width: 9.5vw;
     }
 }
 

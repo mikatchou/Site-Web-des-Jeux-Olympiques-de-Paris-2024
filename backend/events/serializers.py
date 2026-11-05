@@ -111,3 +111,23 @@ class EventDetailsSerializer (serializers.ModelSerializer) :
         model = Event
         fields = ["id", "date", "discipline", "venue", "teams", "players", "categories"]
 
+class CartEventSerializer(serializers.ModelSerializer):
+    discipline_name = serializers.CharField(source="discipline.name")
+    venue_name = serializers.CharField(source="venue.name")
+    venue_city = serializers.CharField(source="venue.city")
+    countries = serializers.SerializerMethodField()
+
+    def get_countries(self, event):
+        return list(
+            event.teams.values_list("country__code", flat=True)
+        )
+
+    class Meta:
+        model = Event
+        fields = [
+            "date",
+            "discipline_name",
+            "countries",
+            "venue_name",
+            "venue_city",
+        ]

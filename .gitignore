@@ -9,6 +9,7 @@ __pycache__/
 # Django
 /staticfiles/
 **/media/
+celerybeat-schedule*
 
 
 # Env

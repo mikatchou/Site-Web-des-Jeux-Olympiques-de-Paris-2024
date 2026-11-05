@@ -10,14 +10,14 @@ function datasets(index: number) {
                 "categories": [
                     {
                         offers: [
-                            { price: 50.00 },
-                            { price: 750.00 },
+                            { id: 1, seat_quantity: 1, price: 50.00 },
+                            { id: 2, seat_quantity: 1, price: 750.00 },
                         ]
                     },
                     {
                         offers: [
-                            { price: 50.00 },
-                            { price: 750.00 },
+                            { id: 3, seat_quantity: 1, price: 50.00 },
+                            { id: 4, seat_quantity: 1, price: 750.00 },
                         ]
                     }
                 ],

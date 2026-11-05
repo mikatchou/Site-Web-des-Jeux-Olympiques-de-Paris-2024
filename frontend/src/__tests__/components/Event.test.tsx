@@ -3,21 +3,22 @@ import { describe, expect, it } from "vitest";
 import Event from "../../components/Event";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom/vitest";
+import type { EventResult } from "../../types/EventType";
 
 
-const dataset = {
+const dataset: EventResult = {
     id: 5,
     categories: [
         {
             offers: [
-                { price: 50.00 },
-                { price: 750.00 },
+                { id: 1, seat_quantity: 1, price: 50.00 },
+                { id: 2, seat_quantity: 1, price: 750.00 },
             ]
         },
         {
             offers: [
-                { price: 50.00 },
-                { price: 750.00 },
+                { id: 3, seat_quantity: 1, price: 50.00 },
+                { id: 4, seat_quantity: 1, price: 750.00 },
             ]
         }
     ],

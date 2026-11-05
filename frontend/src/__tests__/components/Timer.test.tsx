@@ -16,11 +16,11 @@ describe("affichage du timer", () => {
     
     it("affiche le temps restant", () => {
         timer(200)
-        expect(screen.getByText(/Temps restant pour demander un nouveau code :/i)).toBeInTheDocument();
+        expect(screen.getByText(/Temps restant :/i)).toBeInTheDocument();
     })
 
     it("affiche le temps restant", () => {
         timer(0)
-        expect(screen.queryByText(/Temps restant pour demander un nouveau code :/i)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Temps restant :/i)).not.toBeInTheDocument();
     })
 })

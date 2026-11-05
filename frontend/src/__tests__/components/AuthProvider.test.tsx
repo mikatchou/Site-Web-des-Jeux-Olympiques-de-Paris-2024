@@ -5,6 +5,7 @@ import '@testing-library/jest-dom';
 import { AuthProvider } from "../../components/AuthProvider";
 import Header from "../../components/Header";
 import { ACCESS_TOKEN } from "../../constants";
+import { CartProvider } from "../../components/CartContext";
 
 function createFakeJwt(payload: object) {
     const base64 = btoa(JSON.stringify(payload));
@@ -17,11 +18,13 @@ describe("AuthProvider", () => {
         localStorage.clear();
     })
 
-        it("affiche se connecter si aucune connexion", () => {
+    it("affiche se connecter si aucune connexion", () => {
         render(
             <MemoryRouter>
                 <AuthProvider>
-                    < Header />
+                    <CartProvider>
+                        < Header />
+                    </CartProvider>
                 </AuthProvider>
             </MemoryRouter>
         )
@@ -30,7 +33,7 @@ describe("AuthProvider", () => {
 
     it("affiche le nom de l'utilisateur connecté", () => {
         localStorage.setItem("first_name", "Mika");
-        localStorage.setItem(ACCESS_TOKEN, 
+        localStorage.setItem(ACCESS_TOKEN,
             createFakeJwt({
                 sub: "123",
                 name: "Mika",
@@ -40,7 +43,9 @@ describe("AuthProvider", () => {
         render(
             <MemoryRouter>
                 <AuthProvider>
-                    < Header />
+                    <CartProvider>
+                        < Header />
+                    </CartProvider>
                 </AuthProvider>
             </MemoryRouter>
         )
@@ -49,7 +54,7 @@ describe("AuthProvider", () => {
 
     it("génération d'un nouveau token, si token expiré", () => {
         localStorage.setItem("first_name", "Mika");
-        localStorage.setItem(ACCESS_TOKEN, 
+        localStorage.setItem(ACCESS_TOKEN,
             createFakeJwt({
                 sub: "123",
                 name: "Mika",
@@ -59,7 +64,9 @@ describe("AuthProvider", () => {
         render(
             <MemoryRouter>
                 <AuthProvider>
-                    < Header />
+                    <CartProvider>
+                        < Header />
+                    </CartProvider>
                 </AuthProvider>
             </MemoryRouter>
         )

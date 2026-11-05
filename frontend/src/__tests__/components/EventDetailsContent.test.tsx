@@ -5,6 +5,7 @@ import "@testing-library/jest-dom/vitest";
 import userEvent from "@testing-library/user-event";
 import EventDetailsContent from "../../components/EventDetailsContent";
 import type { EventResult } from "../../types/EventType";
+import { CartProvider } from "../../components/CartContext";
 
 const eventTest: EventResult = {
     id: 1,
@@ -46,7 +47,9 @@ describe("Event details page", () => {
     beforeEach(() => {
         render(
             <MemoryRouter>
-                <EventDetailsContent data={eventTest} />
+                <CartProvider>
+                    <EventDetailsContent data={eventTest} />
+                </CartProvider>
             </MemoryRouter>
         );
     })
@@ -58,7 +61,7 @@ describe("Event details page", () => {
     it("l'image s'agrandit et se ferme", async () => {
         const boutonImage = await screen.findByRole("button", { name: /Plan du site/i });
         await userEvent.click(boutonImage);
-        const closeButton = await screen.findByRole("button", {name: "Fermer l’image agrandie"});
+        const closeButton = await screen.findByRole("button", { name: "Fermer l’image agrandie" });
         expect(closeButton).toBeInTheDocument();
         await userEvent.click(closeButton);
         expect(closeButton).not.toBeInTheDocument();

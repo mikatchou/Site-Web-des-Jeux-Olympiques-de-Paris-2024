@@ -29,6 +29,7 @@ dist/
 coverage/
 *.pytest_cache/
 *.log
+.coverage
 
 # OS
 .DS_Store

@@ -16,10 +16,12 @@ type dataProps = {
 export default function EventDetailsContent({ data }: dataProps) {
     const [expandedImage, setExpandedImage] = useState<{ src: string; alt: string } | null>(null);
     const venueImage = data.venue.image;
-    const { cart, addOffer, errorMessage, setIsCartOpen, loading } = useCart()
+    const { cart, addOffer, setIsCartOpen, loading } = useCart()
     const { isAuthenticated } = useContext(AuthContext)
     const [showLoginPopup, setShowLoginPopup] = useState(false);
     const [offerId, setOfferId] = useState<null | number>(null)
+    const [offerError, setOfferError] = useState<{ offerId: number; message: string } | null>(null);
+    const [isOfferErrorVisible, setIsOfferErrorVisible] = useState(false);
 
     useEffect(() => {
         if (!expandedImage) return;
@@ -29,6 +31,17 @@ export default function EventDetailsContent({ data }: dataProps) {
         window.addEventListener("keydown", closeOnEscape);
         return () => window.removeEventListener("keydown", closeOnEscape);
     }, [expandedImage]);
+
+    useEffect(() => {
+        if (!offerError) return;
+
+        setIsOfferErrorVisible(true);
+        const timeoutId = window.setTimeout(() => {
+            setIsOfferErrorVisible(false);
+        }, 4700);
+
+        return () => window.clearTimeout(timeoutId);
+    }, [offerError]);
 
     const date = new Date(data.date);
     const jour = date
@@ -51,9 +64,11 @@ export default function EventDetailsContent({ data }: dataProps) {
             return;
         }
         setOfferId(offerId)
-        await addOffer(offerId, 1)
-        if (errorMessage) {
-            alert(errorMessage)
+        setOfferError(null);
+        setIsOfferErrorVisible(false);
+        const error = await addOffer(offerId, 1)
+        if (error) {
+            setOfferError({ offerId, message: error });
         } else {
             setIsCartOpen(true)
         }
@@ -139,6 +154,19 @@ export default function EventDetailsContent({ data }: dataProps) {
                                         </button>
                                     )}
                                 </div>
+                                {offerError?.offerId === offer.id && (
+                                    <div
+                                        className={`offer-error${isOfferErrorVisible ? " show" : ""}`}
+                                        role="alert"
+                                        onTransitionEnd={(transitionEvent) => {
+                                            if (!isOfferErrorVisible && transitionEvent.propertyName === "opacity") {
+                                                setOfferError(null);
+                                            }
+                                        }}
+                                    >
+                                        {offerError.message}
+                                    </div>
+                                )}
                             </div>
                         );
                     })}

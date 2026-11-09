@@ -201,6 +201,7 @@ main {
     margin: 2.5rem 0;
 }
 .offer-div {
+    position: relative;
     height: 5.7rem;
     width: 100%;
     background-color: white;
@@ -211,6 +212,28 @@ main {
     justify-content: space-between;
     align-items: center;
     font-size: 1.5rem;
+}
+.offer-error {
+    position: absolute;
+    top: calc(100% + 0.35rem);
+    right: 1rem;
+    z-index: 2;
+    max-width: calc(100% - 2rem);
+    padding: 0.45rem 0.8rem;
+    border-radius: 0.5rem;
+    background: #c2281d;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
+    color: white;
+    font-size: 0.9rem;
+    opacity: 0;
+    transform: translateY(-0.35rem);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+}
+.offer-error.show {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 .seat-quantity {
     display: flex;
@@ -620,4 +643,3 @@ main {
         width: 9.5vw;
     }
 }
-

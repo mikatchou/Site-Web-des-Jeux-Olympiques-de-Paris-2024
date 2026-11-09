@@ -33,7 +33,7 @@ type EventResult = {
             name?: string
             price: number;
         }[];
-        id?: string;
+        id?: number;
     }[];
 };
 

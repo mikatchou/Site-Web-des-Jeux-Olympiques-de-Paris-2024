@@ -11,7 +11,7 @@ type contextType = {
     loading: boolean;
     errorMessage: string | null;
     setIsCartOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    addOffer: (offer_id: number, quantity: number) => Promise<void>;
+    addOffer: (offer_id: number, quantity: number) => Promise<string | null>;
     updateItem: (item_id: number, quantity: number) => Promise<void>;
     deleteItem: (item_id: number) => Promise<void>;
     deleteCart: () => Promise<void>;
@@ -59,33 +59,38 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
     }, [isAuthenticated])
 
-    async function addOffer(offer_id: number, quantity: number) {
+    async function addOffer(offer_id: number, quantity: number): Promise<string | null> {
         setLoading(true)
         try {
             const response = await cartService.addItem(offer_id, quantity);
             setCart(response.data);
             setStockVersion(version => version + 1);
             setErrorMessage(null);
+            return null;
         } catch (error: unknown) {
+            let message: string;
+
             if (axios.isAxiosError(error)) {
                 const status = error.response?.status;
                 const data = error.response?.data;
 
                 if (status === 404) {
-                    setErrorMessage(data?.detail ?? "Offre introuvable");
+                    message = data?.detail ?? "Offre introuvable";
                 } else if (status === 400) {
-                    const message =
+                    const validationMessage =
                         data?.quantity ??
                         data?.detail ??
                         data?.non_field_errors?.[0] ??
                         "Quantité invalide";
-                    setErrorMessage(Array.isArray(message) ? message[0] : message);
+                    message = Array.isArray(validationMessage) ? validationMessage[0] : validationMessage;
                 } else {
-                    setErrorMessage("une erreur est survenue, veuillez réessayer ultérieurement");
+                    message = "une erreur est survenue, veuillez réessayer ultérieurement";
                 }
             } else {
-                setErrorMessage("une erreur est survenue, veuillez réessayer ultérieurement");
+                message = "une erreur est survenue, veuillez réessayer ultérieurement";
             }
+            setErrorMessage(message);
+            return message;
         } finally {
             setLoading(false)
         }

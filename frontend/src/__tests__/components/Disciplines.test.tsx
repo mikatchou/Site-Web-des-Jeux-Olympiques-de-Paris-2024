@@ -30,7 +30,7 @@ describe('Disciplines', () => {
         fireEvent.click(bouttonPlus)
         const bouttonMoins = await screen.findByRole("button", { name: /moins/ })
         fireEvent.click(bouttonMoins)
-        expect(await screen.findAllByAltText(/nom/)).toHaveLength(18)
+        expect(await screen.findAllByAltText(/nom/)).toHaveLength(10)
     })
 })
 

@@ -2,6 +2,7 @@ from django.contrib import admin
 from django import forms
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm, UserCreationForm
+from carts.models import Cart, CartItem
 from .models import CustomUser
 
 from events.models import (
@@ -142,6 +143,28 @@ class CategoryAdmin(admin.ModelAdmin):
     )
 
 
+
+# ─────────────────────────────────────
+# Offer Admin
+# ─────────────────────────────────────
+
+@admin.register(Offer)
+class OfferAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "id",
+        "name",
+        "seat_quantity",
+        "price",
+        "category",
+    )
+    
+    # list_filter = (
+    #     "category",
+    # )
+
+
+
 # ─────────────────────────────────────
 # Discipline
 # ─────────────────────────────────────
@@ -253,3 +276,16 @@ class PlayerAdmin(admin.ModelAdmin):
         "last_name",
     )
     filter_horizontal = ("events",)
+
+# ─────────────────────────────────────
+# Cart → CartItems
+# ─────────────────────────────────────
+
+class CartItemInline(admin.TabularInline):
+    model = CartItem
+    extra = 1
+
+@admin.register(Cart)
+class CartAdmin(admin.ModelAdmin):
+    inlines = [CartItemInline]
+    list_display = ("created_at", "expires_at", "user")

@@ -3,6 +3,7 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
 import EventDetails from "../../pages/EventDetails";
 import "@testing-library/jest-dom/vitest";
+import { CartProvider } from "../../components/CartContext";
 
 describe("Event details page", () => {
 
@@ -10,7 +11,7 @@ describe("Event details page", () => {
         render(
             <MemoryRouter initialEntries={["/recherche/billet/1"]}>
                 <Routes >
-                    <Route path="/recherche/billet/:id" element={<EventDetails />} />
+                    <Route path="/recherche/billet/:id" element={<CartProvider><EventDetails /></CartProvider> } />
                 </Routes>
             </MemoryRouter>
         );
@@ -20,7 +21,7 @@ describe("Event details page", () => {
         render(
             <MemoryRouter initialEntries={["/recherche/billet/2"]}>
                 <Routes >
-                    <Route path="/recherche/billet/:id" element={<EventDetails />} />
+                    <Route path="/recherche/billet/:id" element={<CartProvider><EventDetails /></CartProvider>} />
                 </Routes>
             </MemoryRouter>
         );
@@ -31,7 +32,7 @@ describe("Event details page", () => {
         render(
             <MemoryRouter initialEntries={["/recherche/billet/erreur"]}>
                 <Routes >
-                    <Route path="/recherche/billet/:id" element={<EventDetails />} />
+                    <Route path="/recherche/billet/:id" element={<CartProvider><EventDetails /></CartProvider>} />
                 </Routes>
             </MemoryRouter>
         );

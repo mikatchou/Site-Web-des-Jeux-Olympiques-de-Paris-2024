@@ -6,6 +6,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { IoCartOutline, IoClose, IoMenu } from "react-icons/io5";
 import { FaCircleUser } from "react-icons/fa6";
 import SearchBar from "./SearchBar";
+import { useCart } from "./CartContext";
+import Cart from "./Cart";
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -14,19 +16,22 @@ export default function Header() {
     const [lastScrollY, setLastScrollY] = useState(0);
     const menuRef = useRef<HTMLElement | null>(null)
     const userMenuRef = useRef<HTMLElement | null>(null)
-    const {isAuthenticated, user} = useContext(AuthContext)
+    const cartRef = useRef<HTMLElement | null>(null)
+    const { isAuthenticated, user } = useContext(AuthContext)
+    const { cart, isCartOpen, setIsCartOpen } = useCart()
 
     useEffect(() => {
         const handleScroll = () => {
-        const currentScrollY = window.scrollY;
-        if (currentScrollY > lastScrollY) {
-            setIsVisible(false);
-            setIsMenuOpen(false);
-            setIsUserMenuOpen(false);
-        } else {
-            setIsVisible(true);
-        }
-        setLastScrollY(currentScrollY);
+            const currentScrollY = window.scrollY;
+            if (currentScrollY > lastScrollY) {
+                setIsVisible(false);
+                setIsMenuOpen(false);
+                setIsUserMenuOpen(false);
+                setIsCartOpen(false);
+            } else {
+                setIsVisible(true);
+            }
+            setLastScrollY(currentScrollY);
         };
 
         window.addEventListener("scroll", handleScroll);
@@ -34,21 +39,24 @@ export default function Header() {
     }, [lastScrollY]);
 
     useEffect(() => {
-        const handleClickOutside = (event : MouseEvent) => {
+        const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-            setIsMenuOpen(false);
+                setIsMenuOpen(false);
             }
             if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
-            setIsUserMenuOpen(false);
+                setIsUserMenuOpen(false);
+            }
+            if (cartRef.current && !cartRef.current.contains(event.target as Node)) {
+                setIsCartOpen(false);
             }
         };
 
-        if (isMenuOpen || isUserMenuOpen) {
+        if (isMenuOpen || isUserMenuOpen || isCartOpen) {
             document.addEventListener("mousedown", handleClickOutside);
         }
 
         return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [isMenuOpen, isUserMenuOpen]);
+    }, [isMenuOpen, isUserMenuOpen, isCartOpen]);
 
     const navigate = useNavigate();
     const goToLogin = () => {
@@ -59,52 +67,66 @@ export default function Header() {
 
     return (
         <header className={isVisible ? "visible" : "hidden"}>
-        <div id="logo-container">
-            <Link className="logo-link" to="/">
-            <img id="logo" src={Logo} alt="Logo des jeux olympiques de Paris 2024" />
-            </Link>
-        </div>
-        <SearchBar menuIsOpen={setIsMenuOpen}/>
-        <div id="navigation">
-            <div id="panier">
-            <button id="cartbutton" aria-label="">
-                <IoCartOutline className="menu-svg"/>
-            </button>
+            <div id="logo-container">
+                <Link className="logo-link" to="/">
+                    <img id="logo" src={Logo} alt="Logo des jeux olympiques de Paris 2024" />
+                </Link>
             </div>
-            <div id="user">
-            <button id="userbutton" aria-label="Bouton menu utilisateur" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>
-                {isUserMenuOpen ? <IoClose className="menu-svg" /> : <FaCircleUser id="user-icon" className="menu-svg" />}
-            </button>
+            <SearchBar menuIsOpen={setIsMenuOpen} />
+            <div id="navigation">
+                <div id="panier">
+                    <button id="cartbutton" aria-label="Bouton panier" onClick={() => setIsCartOpen(!isCartOpen)}>
+                        {isCartOpen ? <IoClose className="menu-svg" /> : <IoCartOutline className="menu-svg" />}
+                    </button>
+                </div>
+                <div id="user">
+                    <button id="userbutton" aria-label="Bouton menu utilisateur" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>
+                        {isUserMenuOpen ? <IoClose className="menu-svg" /> : <FaCircleUser id="user-icon" className="menu-svg" />}
+                    </button>
+                </div>
+                <div id="block-menu">
+                    <button id="menubutton" aria-label="Bouton menu principal" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                        {isMenuOpen ? <IoClose className="menu-svg" /> : <IoMenu className="menu-svg" />}
+                    </button>
+                </div>
             </div>
-            <div id="block-menu">
-            <button id="menubutton" aria-label="Bouton menu principal" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                {isMenuOpen ? <IoClose className="menu-svg" /> : <IoMenu className="menu-svg" />}
-            </button>
-            </div>
-        </div>
 
-        <nav aria-label="Menu principal" ref={menuRef} id="menu" className={isMenuOpen ? "menu open" : "menu closed"} data-testid="main-menu">
-            <SearchBar className="mobile-" menuIsOpen={setIsMenuOpen}/>
-            <ul className="menu-list">
-            <li className="menu-puce"><Link to="/" onClick={() => {setIsMenuOpen(false); goToLogin()}}>Accueil</Link></li>
-            <li className="menu-puce"><Link to="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link></li>
-            <li className="menu-puce"><Link to="/about-us" onClick={() => setIsMenuOpen(false)}>A propos</Link></li>
-            </ul>
-        </nav>
-        <nav aria-label="Menu utilisateur" ref={userMenuRef} id="userMenu" className={isUserMenuOpen ? "menu open" : "menu closed"}>
-            { isAuthenticated ? <>
-                <h3 id="userMenuTitle" className="closed">Bonjour {user}</h3>
+            <nav aria-label="Menu principal" ref={menuRef} id="menu" className={isMenuOpen ? "menu open" : "menu closed"} data-testid="main-menu">
+                <SearchBar className="mobile-" menuIsOpen={setIsMenuOpen} />
                 <ul className="menu-list">
-                    <li className="menu-puce" onClick={() => setIsUserMenuOpen(false) }><Link to="/espace-personnel">Mon espace personnel</Link></li>
-                    <li className="menu-puce" onClick={() => setIsUserMenuOpen(false)}><Link to="/deconnexion">Déconnexion</Link></li>
+                    <li className="menu-puce"><Link to="/" onClick={() => { setIsMenuOpen(false); goToLogin() }}>Accueil</Link></li>
+                    <li className="menu-puce"><Link to="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link></li>
+                    <li className="menu-puce"><Link to="/about-us" onClick={() => setIsMenuOpen(false)}>A propos</Link></li>
                 </ul>
-            </>
-            : <ul className="menu-list">
-                <li className="menu-puce" onClick={() => setIsUserMenuOpen(false)}><Link to="/connexion" state={{ from: location.pathname }}>Me connecter</Link></li>
-                <li className="menu-puce" onClick={() => setIsUserMenuOpen(false)}><Link to="/inscription">M'inscrire</Link></li>
-            </ul>
-            }
-        </nav>
+            </nav>
+            <nav aria-label="Menu utilisateur" ref={userMenuRef} id="userMenu" className={isUserMenuOpen ? "menu open" : "menu closed"}>
+                {isAuthenticated ? <>
+                    <h3 id="userMenuTitle" className="closed">Bonjour {user}</h3>
+                    <ul className="menu-list">
+                        <li className="menu-puce" onClick={() => setIsUserMenuOpen(false)}><Link to="/espace-personnel">Mon espace personnel</Link></li>
+                        <li className="menu-puce" onClick={() => setIsUserMenuOpen(false)}><Link to="/deconnexion">Déconnexion</Link></li>
+                    </ul>
+                </>
+                    : <ul className="menu-list">
+                        <li className="menu-puce" onClick={() => setIsUserMenuOpen(false)}><Link to="/connexion" state={{ from: location.pathname }}>Me connecter</Link></li>
+                        <li className="menu-puce" onClick={() => setIsUserMenuOpen(false)}><Link to="/inscription">M'inscrire</Link></li>
+                    </ul>
+                }
+            </nav>
+            <section aria-label="cart" ref={cartRef} id="cart" className={isCartOpen ? "menu open" : "menu closed"}>
+                <p className="cart-title">Panier</p>
+                {isAuthenticated ?
+                    cart ?
+                        <Cart />
+                        :
+                        <div ><p className="empty-cart">Votre Panier est vide.</p></div>
+                    :
+                        <p>vous devez être connécté(e)</p>
+                }
+                <button id="cart-close-Button" aria-label="Bouton close" onClick={() => setIsCartOpen(!isCartOpen)}>
+                    <IoClose className="menu-svg" />
+                </button>
+            </section>
         </header>
     );
 }

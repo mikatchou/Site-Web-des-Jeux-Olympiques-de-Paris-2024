@@ -4,13 +4,33 @@
 #
 #    pip-compile --no-index requirements.in
 #
+amqp==5.4.2
+    # via kombu
 asgiref==3.12.1
     # via
     #   -r requirements.in
     #   django
     #   django-cors-headers
+billiard==4.3.2
+    # via celery
+celery[redis]==5.6.3
+    # via -r requirements.in
+click==8.5.0
+    # via
+    #   celery
+    #   click-didyoumean
+    #   click-plugins
+    #   click-repl
+click-didyoumean==0.3.1
+    # via celery
+click-plugins==1.1.1.2
+    # via celery
+click-repl==0.4.1
+    # via celery
 colorama==0.4.6
     # via pytest
+coverage[toml]==7.17.2
+    # via pytest-cov
 django==6.1.1
     # via
     #   -r requirements.in
@@ -28,14 +48,22 @@ djangorestframework-simplejwt==5.5.1
     # via -r requirements.in
 iniconfig==2.3.0
     # via pytest
+kombu[redis]==5.7.0
+    # via celery
 model-bakery==1.24.1
     # via -r requirements.in
 packaging==26.3
-    # via pytest
+    # via
+    #   kombu
+    #   pytest
 pillow==12.3.0
     # via -r requirements.in
 pluggy==1.6.0
-    # via pytest
+    # via
+    #   pytest
+    #   pytest-cov
+prompt-toolkit==3.0.53
+    # via click-repl
 psycopg2-binary==2.9.13
     # via -r requirements.in
 pygments==2.21.0
@@ -47,16 +75,38 @@ pyjwt==2.15.1
 pytest==9.1.1
     # via
     #   -r requirements.in
+    #   pytest-cov
     #   pytest-django
+pytest-cov==7.1.0
+    # via -r requirements.in
 pytest-django==4.14.0
     # via -r requirements.in
+python-dateutil==4.0.0
+    # via celery
 python-dotenv==1.2.4
     # via -r requirements.in
 pytz==2026.4
     # via -r requirements.in
+redis==8.1.0
+    # via kombu
 sqlparse==0.6.0
     # via
     #   -r requirements.in
     #   django
+typing-extensions==4.16.0
+    # via click-repl
 tzdata==2026.4
-    # via django
+    # via
+    #   django
+    #   kombu
+    #   python-dateutil
+    #   tzlocal
+tzlocal==5.4.5
+    # via celery
+vine==5.1.0
+    # via
+    #   amqp
+    #   celery
+    #   kombu
+wcwidth==0.9.4
+    # via prompt-toolkit

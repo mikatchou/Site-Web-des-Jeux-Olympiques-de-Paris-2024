@@ -2,11 +2,11 @@ from urllib import request
 
 from django.shortcuts import render
 from rest_framework.generics import ListAPIView, ListCreateAPIView
-from .models import Discipline, Event, Country
+from .models import Category, Discipline, Event, Country
 from .serializers import DisciplineSerializer, EventDetailsSerializer, SearchEventSerializer
 from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework.filters import SearchFilter
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 
 class DisciplineView (ListAPIView) :
     authentication_classes = []
@@ -86,4 +86,6 @@ class ListEventDetailsView (ListAPIView) :
     pagination_class = None
     
     def get_queryset(self):
-        return Event.objects.filter(id=self.kwargs["id"])
+        return Event.objects.filter(id=self.kwargs["id"]).prefetch_related(
+            Prefetch("categories", queryset=Category.objects.order_by("name"))
+        )

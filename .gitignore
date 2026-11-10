@@ -9,6 +9,7 @@ __pycache__/
 # Django
 /staticfiles/
 **/media/
+celerybeat-schedule*
 
 
 # Env
@@ -28,6 +29,7 @@ dist/
 coverage/
 *.pytest_cache/
 *.log
+.coverage
 
 # OS
 .DS_Store

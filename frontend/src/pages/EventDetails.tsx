@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import api from "../api"
 import { type EventResult } from "../types/EventType"
@@ -7,18 +7,19 @@ import "../styles/EventDetails.css"
 import EventDetailsContent from "../components/EventDetailsContent"
 import Redirection from "../components/Redirection"
 import axios from "axios"
+import { useCart } from "../components/CartContext"
 
 export default function EventDetails() {
     const { id } = useParams()
+    const { stockVersion } = useCart()
     const [discipline, setDiscipline] = useState<EventResult>()
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(true)
 
-    const fetchEvent = async () => {
+    const fetchEvent = useCallback(async () => {
         try {
             const result = await api.get(`events/${id}`)
             setDiscipline(result.data[0])
-            console.log(result)
         } catch (error: unknown) {
             if (axios.isAxiosError(error) && error.response?.status === 404) {
                 setError("Événement introuvable.");
@@ -30,11 +31,11 @@ export default function EventDetails() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [id])
 
     useEffect(() => {
         fetchEvent()
-    }, [id])
+    }, [fetchEvent, stockVersion])
 
 
     return <>

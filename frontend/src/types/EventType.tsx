@@ -28,12 +28,12 @@ type EventResult = {
         total_seats?: number;
         available_seats?: number;
         offers: {
-            seat_quantity?: number;
-            id?: number;
+            seat_quantity: number;
+            id: number;
             name?: string
             price: number;
         }[];
-        id?: string;
+        id?: number;
     }[];
 };
 

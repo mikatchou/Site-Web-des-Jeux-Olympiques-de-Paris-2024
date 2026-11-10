@@ -33,8 +33,8 @@ export default function Timer({
         <>
         {timeLeft > 0 && (
             <div className="timer">
-            Temps restant pour demander un nouveau code :{" "}
-            {minutes}:{String(seconds).padStart(2, "0")}
+            Temps restant :{" "}
+            {minutes} min {String(seconds).padStart(2, "0")} sec
             </div>
         )}
         </>

@@ -44,8 +44,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(seconds=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(minutes=2),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
 
 # Application definition
@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'authentication',
     'events.apps.EventsConfig',
+    'carts',
 ]
 
 MIDDLEWARE = [
@@ -176,3 +177,18 @@ CSRF_TRUSTED_ORIGINS = [os.getenv("CSRF_TRUSTED_ORIGIN", "")]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+
+# CONFIGURATION CELERY
+
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/1"
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_ENABLE_UTC = True
+
+CELERY_BEAT_SCHEDULE = {
+    "check and delete expired carts" : {
+        "task": "carts.tasks.check_expired_carts",
+        "schedule": 300,
+    },
+}

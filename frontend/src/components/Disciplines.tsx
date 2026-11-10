@@ -31,7 +31,7 @@ export default function Disciplines() {
         getDisciplines();
     }, []);
 
-    const displayed = showAll ? disciplines : disciplines.slice(0, 18);
+    const displayed = showAll ? disciplines : disciplines.slice(0, 10);
 
     return (
         <div className="disciplines_container">

@@ -65,6 +65,8 @@ class Category (models.Model) :
     name = models.CharField(max_length=50)
     total_seats = models.PositiveBigIntegerField()
     available_seats = models.PositiveIntegerField()
+    sold_seats = models.PositiveIntegerField(default=0)
+    held_seats = models.PositiveIntegerField(default=0)
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="categories")
     def __str__(self):
         return self.name

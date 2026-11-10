@@ -57,8 +57,8 @@ export default function Cart() {
         return <div className="item-date-div"><p className="item-date">{jour}</p><p className="item-hour">{heure}</p></div>
     }
 
-    return <div className="Cart-div">
-        {timer !== null && <div className="timer-div"><Timer start={timer} setTimer={setTimer} /></div>}
+    return <div aria-label="panier" className="Cart-div">
+        {timer !== null && <div className="timer-div" aria-label="cart timer"><Timer start={timer} setTimer={setTimer} /></div>}
         <div className="cart-items">
             {cart &&
                 cart.items.map((item) =>
@@ -78,9 +78,9 @@ export default function Cart() {
                             <div className="item-offer-quantity">
                                 <p className="offer-price">Prix : {item.offer.price} euros</p>
                                 <div className="quantity-box">
-                                    <button className={item.quantity === 1 ? "less-button disabled" : "less-button"} disabled={item.quantity <= 1} onClick={() => updateItem(item.id, (item.quantity - 1))}><CgRemove /></button>
-                                    <p className="item-quantity">{item.quantity}</p>
-                                    <button className={item.available_seats < item.offer.seat_quantity || item.quantity * item.offer.seat_quantity > 9 ? "more-button disabled" : "more-button"} disabled={item.available_seats < item.offer.seat_quantity || item.quantity * item.offer.seat_quantity === 10} onClick={() => updateItem(item.id, item.quantity + 1)}><CgAdd /></button>
+                                    <button aria-label="bouton moins" className={item.quantity === 1 ? "less-button disabled" : "less-button"} disabled={item.quantity <= 1} onClick={() => updateItem(item.id, (item.quantity - 1))}><CgRemove /></button>
+                                    <p aria-label="quantité offre" className="item-quantity">{item.quantity}</p>
+                                    <button aria-label="bouton plus" className={item.available_seats < item.offer.seat_quantity || item.quantity * item.offer.seat_quantity > 9 ? "more-button disabled" : "more-button"} disabled={item.available_seats < item.offer.seat_quantity || item.quantity * item.offer.seat_quantity === 10} onClick={() => updateItem(item.id, item.quantity + 1)}><CgAdd /></button>
                                 </div>
                             </div>
                         </div>

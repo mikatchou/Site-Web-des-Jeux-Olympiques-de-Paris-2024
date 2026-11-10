@@ -21,7 +21,7 @@ const eventTest: EventResult = {
     players: [],
     categories: [
         {
-            id: "1",
+            id: 1,
             name: "Catégorie A",
             total_seats: 50,
             available_seats: 20,

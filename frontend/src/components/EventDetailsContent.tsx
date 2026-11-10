@@ -138,7 +138,7 @@ export default function EventDetailsContent({ data }: dataProps) {
                                     {isAdding ? (
                                         <LoadingIndicator />
                                     ) : isOfferInCart ? (
-                                        <button onClick={() => setIsCartOpen(true)} className="add-button">
+                                        <button aria-label="bouton afficher panier dans offre" onClick={() => setIsCartOpen(true)} className="add-button">
                                             Panier 
                                             <BsCartCheckFill/>
                                         </button>

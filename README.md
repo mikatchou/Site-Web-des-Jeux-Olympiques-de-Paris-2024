@@ -38,19 +38,43 @@ Site de billetterie pour les JO 2024 organisés à Paris.
 2. dans le terminal, situez vous dans le dossier backend en naviguant avec la commande 'cd'
 3. afin de lancer le serveur, saissisez la commande : python manage.py runserver
 
+## Etape 6 : Lancer les tâches périodiques
+
+Celery est déjà inclus dans `backend/requirements.txt`. Démarrez Redis, puis le worker Celery et Celery Beat dans trois terminaux distincts.
+
+1. Installer et démarrer Redis :
+   - **Windows** : installez Memurai, compatible avec Redis, puis démarrez le service Memurai depuis l'application Services de Windows. Si vous utilisez Redis dans WSL, suivez plutôt les commandes Linux ci-dessous dans votre terminal WSL.
+   - **Linux (Debian/Ubuntu)** :
+     ```sh
+     sudo apt update
+     sudo apt install redis-server
+     sudo systemctl enable --now redis-server
+     ```
+2. Vérifiez que Redis répond avec `redis-cli ping` (dans WSL pour Redis sous WSL). La réponse attendue est `PONG`. Redis doit être accessible sur `localhost:6379`, comme indiqué dans `backend/backend/settings.py`.
+3. Ouvrez un terminal dans le dossier `backend`, activez l'environnement virtuel créé à l'étape 2, puis démarrez le worker :
+   ```sh
+   python -m celery -A backend worker --pool=solo --loglevel=info
+   ```
+   L'option `--pool=solo` est nécessaire sous Windows. Sous Linux, vous pouvez l'omettre.
+4. Dans un deuxième terminal, placez-vous également dans `backend`, activez l'environnement virtuel et démarrez Celery Beat :
+   ```sh
+   python -m celery -A backend beat --loglevel=info
+   ```
+5. Laissez Redis, le worker et Beat en fonctionnement. Beat planifie la vérification et la suppression des tâches toutes les X minutes, l'envoi à redis et le worker le récupère de redis puis les exécute.
+
 <br>
 
 # Frontend
 
-## Etape 6 : Installer Nodes.js
+## Etape 7 : Installer Nodes.js
 1. Installer Nodes.js : https://nodejs.org/fr/download
 2. vérifier que node est bien installé en tapant la commande : node -v
 
-## Etape 7 : Installer les dépendances
+## Etape 8 : Installer les dépendances
 1. Ouvrez le terminal et saisissez la commande : npm install
 2. afin de démarrer le serveur, saisissez la commande : npm run dev
 
-## Etape 7 : Démarrer le serveur frontend
+## Etape 9 : Démarrer le serveur frontend
 1. Lancer le terminal
 2. dans le terminal, situez vous dans le dossier frontend en naviguant avec la commande 'cd'
 3. afin de lancer le serveur, saissisez la commande : npm run dev

@@ -7,7 +7,10 @@
     --linear: linear-gradient(90deg, var(--color-primary) 0%, #00203A 100%);
     --linear-down: linear-gradient(360deg, var(--color-primary) 0%, #00203A 100%);
     --linear-anavailable: linear-gradient(360deg, #babcbd 0%, #809cb6 100%);
+    --linear-forbidden: linear-gradient(90deg, #aeb3b6 0%, #9e9e9e 100%);
     --color-tertiary-line: #4899db;
+    --linear-red: linear-gradient(90deg, rgb(237, 17, 17) 0%, rgb(190, 12, 12) 100%);
+    --linear-red-down: linear-gradient(360deg, rgb(237, 17, 17) 0%, rgb(190, 12, 12) 100%);
 }
 
 *,

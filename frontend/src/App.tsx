@@ -15,7 +15,7 @@ import Result from "./pages/Result";
 import EventDetails from "./pages/EventDetails";
 import { useCart } from "./components/CartContext";
 import DetailedCart from "./pages/checkout/DetailedCart";
-import CheckoutLayout from "./components/Checkout/CheckoutLayout";
+import CheckoutLayout from "./components/checkout/CheckoutLayout";
 
 function Logout() {
   const { setUser } = useContext(AuthContext);

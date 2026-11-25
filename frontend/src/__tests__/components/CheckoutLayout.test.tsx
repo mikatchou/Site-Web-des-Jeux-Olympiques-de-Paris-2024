@@ -1,4 +1,4 @@
-import CheckoutLayout from '../../components/Checkout/CheckoutLayout';
+import CheckoutLayout from '../../components/checkout/CheckoutLayout';
 import '@testing-library/jest-dom'
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useOutletContext } from 'react-router-dom';

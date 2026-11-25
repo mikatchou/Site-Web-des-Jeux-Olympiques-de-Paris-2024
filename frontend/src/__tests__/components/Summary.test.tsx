@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from "vitest";
 import cart from '../helpers/cart';
-import Summary from '../../components/Checkout/Summary';
+import Summary from '../../components/checkout/Summary';
 
 
 const { mockUseCart } = vi.hoisted(() => ({
@@ -43,7 +43,7 @@ describe("Summary component", () => {
 
         if (Cart) {
             const total = await value(Cart.total_price)
-            const tva = await value((Number(Cart.total_price) * 20 /120).toFixed(2))
+            const tva = await value((Number(Cart.total_price) * 20 / 120).toFixed(2))
             const date = await value(Cart.items[0].event.date.slice(0, 4))
             const quantity = await value(Cart.items[0].quantity.toString())
             const discipline = await value(Cart.items[0].event.discipline_name)

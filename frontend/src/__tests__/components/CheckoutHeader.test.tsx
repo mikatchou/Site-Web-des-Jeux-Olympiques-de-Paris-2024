@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from "vitest";
-import CheckoutHeader from '../../components/Checkout/CheckoutHeader';
+import CheckoutHeader from '../../components/checkout/CheckoutHeader';
 
 const { mockUseLocation } = vi.hoisted(() => ({
     mockUseLocation: vi.fn(),

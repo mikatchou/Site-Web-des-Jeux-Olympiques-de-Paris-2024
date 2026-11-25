@@ -9,6 +9,7 @@ export default function Cart() {
     const { cart, deleteCart, updateItem, setIsCartOpen, deleteItem, errorMessage } = useCart()
     const [timer, setTimer] = useState<number | null>(null);
     const expirationHandled = useRef<number | null>(null);
+    const [warning, setWarning] = useState(false)
 
     useEffect(() => {
 
@@ -25,6 +26,9 @@ export default function Cart() {
                 Math.ceil((expiresAt - Date.now()) / 1000)
             );
             setTimer(remaining);
+            if (remaining <= 300) {
+                setWarning(true)
+            }
             if (remaining === 0 && expirationHandled.current !== cartId) {
                 expirationHandled.current = cartId;
                 alert("Votre panier a éxpiré.")
@@ -58,7 +62,7 @@ export default function Cart() {
     }
 
     return <div aria-label="panier" className="Cart-div">
-        {timer !== null && <div className="timer-div" aria-label="cart timer"><Timer start={timer} setTimer={setTimer} /></div>}
+        {timer !== null && <div className={`timer-div ${warning && "warning"}`} aria-label="cart timer"><Timer start={timer} setTimer={setTimer} /></div>}
         <div className="cart-items">
             {cart &&
                 cart.items.map((item) =>

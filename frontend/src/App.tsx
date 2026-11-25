@@ -14,6 +14,8 @@ import NewPassword from "./pages/NewPassword";
 import Result from "./pages/Result";
 import EventDetails from "./pages/EventDetails";
 import { useCart } from "./components/CartContext";
+import DetailedCart from "./pages/checkout/DetailedCart";
+import CheckoutLayout from "./components/Checkout/CheckoutLayout";
 
 function Logout() {
   const { setUser } = useContext(AuthContext);
@@ -60,6 +62,9 @@ function App() {
             <Route path="*" element={<NotFound />} />
             <Route path="/recherche" element={<Result />} />
             <Route path="/recherche/billet/:id" element={<EventDetails />} />
+          </Route>
+          <Route element={<CheckoutLayout />} >
+            <Route path="/panier" element={<DetailedCart />} />
           </Route>
         </Routes>
       </BrowserRouter>

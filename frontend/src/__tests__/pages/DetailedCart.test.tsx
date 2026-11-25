@@ -22,7 +22,7 @@ vi.mock("react", async (importOriginal) => {
 vi.mock("../../components/CartContext", () => ({
     useCart: mockUseCart,
 }))
-vi.mock("../../components/checkout/DetailedCartContent", () => ({
+vi.mock("../../components/Checkout/DetailedCartContent", () => ({
     default: mockDetailedCartContent,
 }))
 vi.mock("react-router-dom", async (importOriginal) => ({

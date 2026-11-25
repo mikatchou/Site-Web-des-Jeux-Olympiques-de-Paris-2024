@@ -1,4 +1,4 @@
-import CheckoutLayout from '../../components/checkout/CheckoutLayout';
+import CheckoutLayout from '../../components/Checkout/CheckoutLayout';
 import '@testing-library/jest-dom'
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useOutletContext } from 'react-router-dom';
@@ -23,7 +23,7 @@ vi.mock("react", async (importOriginal) => {
         useContext: mockUseContext,
     };
 });
-vi.mock("../../components/checkout/CheckoutHeader", () => ({
+vi.mock("../../components/Checkout/CheckoutHeader", () => ({
     default: () => <header data-testid="checkout header" />
 }))
 vi.mock("../LoadingIndicator", () => ({
@@ -32,7 +32,7 @@ vi.mock("../LoadingIndicator", () => ({
 vi.mock("../../components/Footer", () => ({
     default: () => <footer data-testid="footer" />
 }))
-vi.mock("../../components/checkout/Summary", () => ({
+vi.mock("../../components/Checkout/Summary", () => ({
     default: ({ nextStepUrl, nextStepName }: { nextStepUrl: string; nextStepName: string; }) => <div data-testid="summary">
         <a href={nextStepUrl}>{nextStepName}</a>
     </div>

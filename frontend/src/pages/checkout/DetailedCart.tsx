@@ -2,7 +2,7 @@ import { useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../../components/AuthProvider";
 import { useCart } from "../../components/CartContext";
 import { useOutletContext } from "react-router-dom";
-import DetailedCartContent from "../../components/checkout/DetailedCartContent";
+import DetailedCartContent from "../../components/Checkout/DetailedCartContent";
 
 export default function DetailedCart() {
     const cartRef = useRef<HTMLElement | null>(null)

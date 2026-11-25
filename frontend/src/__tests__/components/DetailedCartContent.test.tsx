@@ -2,7 +2,7 @@ import '@testing-library/jest-dom'
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
 import { describe, expect, it, vi } from "vitest";
-import DetailedCartContent from '../../components/checkout/DetailedCartContent';
+import DetailedCartContent from '../../components/Checkout/DetailedCartContent';
 import cart from '../helpers/cart';
 
 const { mockUseCart, mockDeleteCart, mockUpdateItem, mockDeleteItem } = vi.hoisted(() => ({

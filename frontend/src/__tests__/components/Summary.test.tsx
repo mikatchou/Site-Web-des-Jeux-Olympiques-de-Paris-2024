@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, expect, it, vi } from "vitest";
 import cart from '../helpers/cart';
-import Summary from '../../components/checkout/Summary';
+import Summary from '../../components/Checkout/Summary';
 
 
 const { mockUseCart } = vi.hoisted(() => ({

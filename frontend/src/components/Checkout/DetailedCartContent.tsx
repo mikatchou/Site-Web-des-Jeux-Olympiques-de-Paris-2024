@@ -34,7 +34,7 @@ export default function DetailedCartContent() {
         <div className="detailed-cart-items">
             {cart &&
                 cart.items.map((item) =>
-                    <div key={item.id} className="detailed-cart-item cart-item">
+                    <div data-testId={item.id} key={item.id} className="detailed-cart-item cart-item">
                         <div className="item-information">
                             <div className="detail-discipline-countries-div">
                                 <p className="discipline-title">{item.event.discipline_name}</p>
